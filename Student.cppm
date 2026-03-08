@@ -12,7 +12,7 @@ using std::print;
 class Course;
 
 
-class Student:public User{
+export class Student:public User{
 
 public:
     Student(){}
@@ -32,7 +32,7 @@ public:
 private:
     int Sid;
     string name;
-    vector<Course> *courses;//存储选择的课程
+    vector<Course*> courses;//存储选择的课程
     vector<pair<string, int>> Grades;//记录一系列课程的成绩
 
 };

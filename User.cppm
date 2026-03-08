@@ -7,7 +7,7 @@ import std;
 using std::string;
 using std::vector;
 
-class User{
+export class User{
 public:
     User(){};
     User(string userAccount, string userPasssword): userAccount(userAccount), userPasssword(userPasssword) {}

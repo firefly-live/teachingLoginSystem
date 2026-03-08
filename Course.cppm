@@ -9,21 +9,35 @@ using std::vector;
 class Student;
 
 
-class Course{
+export  class Course{
 
 public:
     Course(){}
 
     Course(int Cid, string name)
         : Cid(Cid), name(name){}
-    bool hasId(); // 查看是否有这个课程
+    bool hasId(int Ccid); // 查看是否有这个课程
     void joinStudents(Student* student);
-    void showInformation();//展示课程信息
+   const string showInformation();//展示课程信息
 
     void scoreGrades(int score);//由老师类传入，然后调用studet的打分，且调入自己的课程名字
 
 private:
     int Cid;
     string name;
-    vector <Student> *students;
+    vector <Student*> students;
 };
+
+
+bool Course:: hasId(int Ccid){
+    return Ccid==Cid;
+
+} // 查看是否有这个课程
+void Course:: joinStudents(Student* student){
+
+}
+const string Course:: showInformation(){
+    return format("{}\t{}",name,Cid);
+}//展示课程信息::
+void Course:: scoreGrades(int score){
+}//由老师类传入，然后调用studet的打分，且调入自己的课程名字
