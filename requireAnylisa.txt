@@ -1,0 +1,169 @@
+                    课程选课系统，
+
+大体框架：首先实现程序逻辑，再次实现sql数据库搭配程序存储数据,然后优化整体，比如登陆用户名密码
+
+
+user通过系统登陆，学生老师不同的操作权限，
+    学生：1：查看可选所有课程---对应老师显示，
+         2：选课--CRUD，
+         3：查看自己的选课成绩
+
+    老师：1：查看自己教的课程
+         2：给学生成绩打分
+         3:查看学生成绩--显示课程
+
+
+程序逻辑以及类实现----
+
+A:目标用户user：老师Teacher，学生Student
+            --合并基类User,老师学生继承，User函数指针操作老师和学生对像
+
+老师学生共同方法名字：1：showCourse（）---对于学生来说，查看可选课程，对于老师来说，查看自己的教授课
+
+
+//--------------------------------------类基本实现
+         class User{
+         public:
+                  User(){};
+                  virtual void showCourse()=0;//--对于学生来说，查看可选课程，对于老师来说，查看自己的教授课
+         private:
+                  string userAccount;//后续优化完善实现
+                  string suerPasssword;//后续完善实现
+         }
+
+
+         class Teacher :public User{
+
+         public:
+                  Teacher(){};
+                  void showCourse();//--对于学生来说，查看可选课程，对于老师来说，查看自己的教授课
+                  void scoreGrades(int score){}//给学生打分，传入course
+                  void showInformation();
+
+
+                  //常用逻辑判断
+                  void joinCourse(Course* course){}
+                  bool hasId(){};
+         private:
+                  int Tid;
+                  string name;//名字
+                  vector<Course> *courses;//通过课程得出选了这个课程的进而改学生成绩
+         }
+
+
+
+         class Student:public User{
+
+         public:
+                  Student(){}
+                  void showCourse();//--对于学生来说，查看可选课程，对于老师来说，查看自己的教授课
+                  void operatingCourse();//2：选课--CRUD
+                  void showMyGrade();3：查看自己的选课成绩
+                  void scoreGrades(int Cid,int score){}//由课程传入，课程的名字和老师选择打分传入
+
+
+                  //常用逻辑判断
+                  bool hasId(){};//查看是否有这个学生
+                  void joinCourse(Course* course){}
+                  void showInformaton(){};
+
+         private:
+                  int Sid;
+                  string name;
+                  vector<Course> *courses;//存储选择的课程
+                  vector<pair<string, int>> Grades;//记录一系列课程的成绩
+
+         }
+
+
+
+
+         class Course{
+
+         public:
+                  Course(){}
+
+                  bool hasId(){};//查看是否有这个课程
+                  void joinStudents(Student* student){}
+                  void showInformation(){};//展示课程信息
+
+                  void scoreGrades(int score){}//由老师类传入，然后调用studet的打分，且调入自己的课程名字
+
+         private:
+                  int Cid;
+                  string name;
+                  vector <Student> *students;
+         }
+
+
+
+         class CenterControl{
+         public:
+                  static CenterControl system(){};//传出静态的管理对象
+                  void initilize();//初始化
+                  void studentRollInCourse(int sId,int cId);//学生注册课程
+                  void studentNotRollInCourse(int sId,int cId);//学生取消课程
+
+
+                  void scoreGrades(int sId,int cId)//目标查找老师，课程，学生对象，然后调用打分程序 //打分
+                  void showStudentGrades(int sId,int cId);//查看学生的成绩
+                  void loginMethod();//选择登陆方式
+                  void loginStudent(Stident* student);//选择学生方式
+                  void loginTeacher(Student* teacher);//选择老师登陆方式
+         private:
+                  vector<Student> *students;//存储学生类
+                  vector<Course> *courses;//存储课程类
+                  vector<Course> *teacher;//存储老师类
+
+
+
+         }
+
+//--------------------------------------程序控制逻辑实现
+
+
+1：CenterControl初始化控制对象,初始化确定有 ----课程，学生，老师的所有信息
+2：选择登陆方式loginMethod();
+case:学生{
+         while循环展示ui操作界面：
+                  1：查看可选所有课程---对应老师显示，
+                          teacher[i].showInformation() +teacher[i].showCourse()-> course的information
+                  2：选课--CRUD
+                           studentRollInCourse(int sId,int cId);//学生注册课程
+                  2：退选课--CRUD
+                           studentNotRollInCourse(int sId,int cId);//学生取消课程
+                  3：查看自己的选课成绩
+}                          student.showMyGrade();3：查看自己的选课成绩
+case:老师{
+          while循环展示ui操作界面：
+                   1：查看自己教的课程
+                           teacher[i].showCourse()-> course的information()
+                   2：给学生成绩打分
+                            void scoreGrades(int sId,int cId)//目标查找老师，课程，学生对象，然后调用打分程序 //打分
+                   3:查看学生成绩--显示课程
+                           student.showMyGrade();
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
