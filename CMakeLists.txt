@@ -19,12 +19,13 @@ add_executable(LoginSystem
 set(MODULE_INTERFACE_FILES
     #${MODULE_LIB_DIR1}/utils.cppm         #添加模块库的模块接口单元
     #math.cppm
-    Course.cppm
     User.cppm
     Student.cppm
     Teacher.cppm
+    Course.cppm
+    moduleObjects.cppm
     centerControl.cppm
-    moduleObjects.cppm# 模块接口单元
+    # 模块接口单元
 )
 
 
