@@ -27,7 +27,12 @@ public:
     //常用逻辑判断
     bool hasId();//查看是否有这个学生
     void joinCourse(Course* course);//添加课程信息
+     void popCourse(Course* course);//退选课程信息
     void showInformaton();//展示学生信息
+
+
+    bool operator==(Student* student);//测试student对象是否相等的操作
+    void operator=(Student* student);//测试student对象是否相等的操作
 
 private:
     int Sid;
@@ -37,8 +42,36 @@ private:
 
 };
 
-void Student::showCourse(){
+bool Student::operator==(Student* student){
+    return (Sid==student->Sid&&name==student->name);
+}//检查对象是否相等，然后返回，用于检测容器和传入的对象是否相等，查找到则pop
+void Student::operator=(Student* student){
+    Sid=student->Sid;
+    name=student->name;
+}//赋值对象，准备交换容器当中的对象，然后pop
 
-    print("helllo\n");
 
-}
+
+
+void Student::joinCourse(Course* course){
+    courses.push_back(course);
+}//添加课程信息
+void Student::popCourse(Course* course){
+
+//遍历找到对象，然后pop出去
+    for(int i=0;i<courses.size();i++)
+    {
+        if(courses[i]==course)
+        {
+            courses[i]=courses[courses.size()-1];// 将现在的course保存末尾的course对象，然后将末尾的pop出去
+            courses.pop_back();
+
+            print("退选专业课程成功\n");
+            return;
+        }
+
+    }
+      print("未选该课程，请查看自己输入是否正确\n");//没有该对象则返回消息
+}//退选课程信息
+
+

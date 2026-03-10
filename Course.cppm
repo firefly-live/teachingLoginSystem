@@ -7,7 +7,7 @@ import std;
 using std::string;
 using std::vector;
 class Student;
-
+using std::print;
 
 export  class Course{
 
@@ -22,6 +22,11 @@ public:
 
     void scoreGrades(int score);//由老师类传入，然后调用studet的打分，且调入自己的课程名字
 
+    bool operator==(Course* course);//检查course的两个对象是否相等
+    void operator=(Course* course);//检查course的两个对象是否相等
+
+    void popStudent(Student* student);
+
 private:
     int Cid;
     string name;
@@ -29,12 +34,46 @@ private:
 };
 
 
+
+
+
+
+
+bool Course::operator==(Course* course){
+
+    return (Cid==course->Cid&&name==course->name);
+}//检查course的两个对象是否相等
+
+void Course::operator=(Course* course){
+    Cid=course->Cid;
+    name=course->name;
+}//检查course的两个对象是否相等
+
+void Course::popStudent(Student* student){
+    for(int i=0;i<students.size();i++)
+    {
+        if(students[i]==student)
+        {
+            students[i]=students[students.size()-1];//将末尾的移动到前面，然后pop出去
+            students.pop_back();
+            print("课程推出学生对象\n");
+            return;
+        }
+
+    }
+      print("未找到学生对象\n");
+}//退选课程信息
+
+
+
+
+
 bool Course:: hasId(int Ccid){
     return Ccid==Cid;
 
 } // 查看是否有这个课程
 void Course:: joinStudents(Student* student){
-
+    students.push_back(student);//导入学生信息到课程
 }
 const string Course:: showInformation(){
     return format("{}\t{}",name,Cid);
