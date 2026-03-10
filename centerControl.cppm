@@ -36,10 +36,14 @@ public:
     void showAllGradeOwnStudent(Student* student);//展示当前学生的所有分数
 
     //教师功能
-
     void showCourseOwn(Teacher* teacher); //展示所有课程+教师
     void scoreGrades(Teacher *teacher);   //目标查找老师，课程，学生对象，然后调用打分程序 //打分s
     void showStudentGrades(Teacher *teacher);
+
+
+
+    //测试功能函数用于辅助其他1函数逻辑判断
+    void studentRollInCourse(int Sid,int Cid);
 
 private:
     vector<Student*> students; //存储学生类
@@ -47,13 +51,43 @@ private:
     vector<Teacher*> teachers; //存储老师类
 };
 
+//测试功能函数用于辅助其他1函数逻辑判断
+void CenterControl::studentRollInCourse(int Sid, int Cid)
+{
+    for (auto stu : students) {
+        if(stu->hasId(Sid))
+        {
+            for(auto cou:courses)
+            {
+                if(cou->hasId(Cid))
+                {
+                   stu->joinCourse(cou); //学生对象-》加入课程
+                    cou->joinStudents(stu); //课程对像->加入学生
+                }
+            }
+        }
+    }
+
+}
+
+
+
+
+
+
+
+
+
 //系统初始优化相关
 void CenterControl::initilize()
 {
     //1开头：学生id
     //2开头：课程id
     //3开头：老师id
-    students.push_back(new Student(2001, "Qiong")); //登入学生信息
+    students.push_back(new Student(2001, "Qiong1")); //登入学生信息
+    students.push_back(new Student(2002, "Qiong2")); //登入学生信息
+    students.push_back(new Student(2003, "Qiong3")); //登入学生信息
+    students.push_back(new Student(2004, "Qiong4")); //登入学生信息
 
     courses.push_back(new Course(1001, "math"));
     courses.push_back(new Course(1002, "C++"));
@@ -65,6 +99,15 @@ void CenterControl::initilize()
     CenterControl::teacherBindCourse(3001, 1001);
 
     CenterControl::teacherBindCourse(3002, 1003);
+
+
+    //测试函数，直接加入到里面，课程加入学生，学生加入课程，测试教师打分
+    studentRollInCourse(2001,1001);
+    studentRollInCourse(2002,1001);
+    studentRollInCourse(2003,1001);
+    studentRollInCourse(2004,1001);
+
+
 } //初始化
 CenterControl CenterControl::getSystem()
 {
@@ -168,7 +211,7 @@ void CenterControl::loginTeacher(Teacher* teacher)
     while (running) {
         std::cout << "\033[2J\033[1;1H"; // 清屏操作
         print("----教师登陆----\n选择功能\n---1:查看自己的课程\n---2:给学生成绩打分\n---3:查看学生成绩\n---4:"
-              "退出学生操作系统\n");
+              "退出教师操作系统\n");
         cin >> c;
         switch (c) {
         case '1': {
@@ -179,6 +222,10 @@ void CenterControl::loginTeacher(Teacher* teacher)
 
         } break;
         case '2': {
+            scoreGrades(teacher);
+            print("按回车键继续....\n");
+            getchar();
+            getchar();
         } break;
         case '3': {
             showStudentGrades(teacher);
@@ -281,7 +328,7 @@ void CenterControl::showAllGradeOwnStudent(Student* student){
 
 
 
-//------教师
+//----------------------------------------------------教师
 
 
 void CenterControl::showCourseOwn(Teacher* teacher)
@@ -289,7 +336,21 @@ void CenterControl::showCourseOwn(Teacher* teacher)
     print("我   教授课程   教授课程id\n");
     teacher->showCourse();
 } //展示所有课程+教师
-void CenterControl::scoreGrades(Teacher* teacher) {} //目标查找老师，课程，学生对象，然后调用打分程序 //打分
+void CenterControl::scoreGrades(Teacher* teacher)
+{
+    //循环打分，输入2退出
+    bool running = true;
+    // --根据teacher->绑定的course->再对学生打分->学生->导入课程和分数
+    char c;
+    while (running) {
+        while (getchar() != '\n');
+        teacher->scoreGrades();
+        print("输入1以退出打分，输入其他继续打分\n");
+        cin >> c;
+        if (c == '1') break;
+    }
+
+} //目标查找老师，课程，学生对象，然后调用打分程序 //打分
 void CenterControl::showStudentGrades(Teacher* teacher)
 {
     teacher->showStudentGrades();
@@ -300,7 +361,7 @@ void CenterControl::showStudentGrades(Teacher* teacher)
 
 
 
-//Student访问course所需成员实现函数
+//------------------------------------Student访问course所需成员实现函数
 void Student::showCourse()
 {
     for (auto cou : courses) {
@@ -334,10 +395,15 @@ void Student::showMyAllGrade()
     }
 }     //3：查看自己的所有选课成绩
 
+  void Student::scoreGrades(int Cid,int score){
+
+
+  }//由课程传入，课程的名字和老师选择打分传入
 
 
 
-//course访问Student所需成员实现函数
+
+//------------------------------------------course访问Student所需成员实现函数
 void Course::showStudentGrades()
 {
       //print("showStudentGrades()\n");
@@ -346,6 +412,32 @@ void Course::showStudentGrades()
     }
 }//依次调用选了该课的学生，依次展示学生分数
 
+
+void Course::showStudent()
+{
+    for (auto stu : students) {
+        print("\t\t\t{}\n", stu->showInformaton());
+    }
+
+} //展示选了课程的学生
+void Course::scoreGrades()
+{
+    print("请输入要打分的目标学生id号\n");
+    int Sid;
+    cin >> Sid;
+    for (auto stu : students) {
+        if (stu->hasId(Sid)) {
+             int score=101;
+            while(score>100||score<0)//检测输入分数1-100
+            {
+                print("请输入分数-0--100\n");
+                cin >> score;
+            }
+            stu->scoreGrades(Cid, score);
+            return;//传入自身的课程号和打的分数--pair容器中，然后push到容器中
+        }
+    }
+}//由老师类传入，然后调用studet的打分，且调入自己的课程名字
 
 
 

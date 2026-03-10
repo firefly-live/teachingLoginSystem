@@ -18,7 +18,7 @@ public:
     Teacher(int Tid, string name)
         : Tid(Tid), name(name){}
     void showCourse(); //--对于学生来说，查看可选课程，对于老师来说，查看自己的教授课
-    void scoreGrades(int score);//给学生打分，传入course
+    void scoreGrades();//给学生打分，传入course
     const string showInformation();//展示老师的信息
 
     //展示学生分数
@@ -35,13 +35,25 @@ private:
 };
 
 
+void Teacher::scoreGrades(){
+    print("\n课程\t课程id号\n");
+    for(auto cour: courses)
+    {
+        print("{}\n",cour->showInformation());//展示当前课程
+        cour->showStudent();//展示该课程有哪些学生
+        cour->scoreGrades();//进入course方法打分
+    }
+}//给学生打分，传入course
+
+
+
 void Teacher::showStudentGrades(){
 
     for(auto cou: courses){
         print("\n课程    课程id\t|\n");
         print("{}\t|\n",cou->showInformation());
         print("\t\t|-->姓名  分数\n");
-        cou->showStudentGrades();
+        cou->showStudentGrades();//展示该课程的学生有哪些，然后调用course的方法来进行打分操作
     }
 
 }//遍历课程容器然后进行遍历输出course保存你的student容器分数

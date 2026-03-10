@@ -18,8 +18,8 @@ public:
     Student(){}
     Student(int Sid, string name)
         : Sid(Sid), name(name){
-        pair<int, int> test(1001,91);//测试
-        Grades.push_back(test);//测试
+        //pair<int, int> test(1001,91);//测试
+        //Grades.push_back(test);//测试
 }
     void showCourse(); //--对于学生来说，查看可选课程，对于老师来说，查看自己的教授课
     void operatingCourse();//2：选课--CRUD
@@ -29,10 +29,10 @@ public:
 
 
     //常用逻辑判断
-    bool hasId();//查看是否有这个学生
+    bool hasId(int Id);//查看是否有这个学生
     void joinCourse(Course* course);//添加课程信息
      void popCourse(Course* course);//退选课程信息
-    void showInformaton();//展示学生信息
+    const string showInformaton();//展示学生信息
 
 
     bool operator==(Student* student);//测试student对象是否相等的操作
@@ -46,8 +46,33 @@ private:
 
 };
 
+ void Student::scoreGrades(int Cid,int score){
+// 先判断Grades容器中有没有Cid这个pair容器，没有再push
+    for(auto &grade:Grades)//&来引用修改分数
+    {
+        if(grade.first==Cid)
+        {
+         print("grade.first==Cid分数修改完毕\n");
+            grade.second=score;
+            return;
+        }
+    }
+    pair<int ,int> p(Cid,score);
+    Grades.push_back(p);
+    print("分数修改完毕\n");
+}//由课程传入，课程的名字和老师选择打分传入
 
 
+
+
+
+const string Student::showInformaton(){
+    return format("{} {}",name,Sid);
+}//展示学生信息
+
+ bool Student::hasId(int Id){
+    return Sid==Id;
+}//查看是否有这个学生
 
 
 

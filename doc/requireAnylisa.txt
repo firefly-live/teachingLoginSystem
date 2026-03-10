@@ -126,22 +126,22 @@ A:目标用户user：老师Teacher，学生Student
 2：选择登陆方式loginMethod();
 case:学生{
          while循环展示ui操作界面：
-                  1：查看可选所有课程---对应老师显示，
-                          teacher[i].showInformation() +teacher[i].showCourse()-> course的information
-                  2：选课--CRUD
+                  1：查看已经选的课程---对应老师显示，
+                         student->showCourse() ---course->show()
+                  2：选课--CRUD--自动展示所有可选课程
                            studentRollInCourse(int sId,int cId);//学生注册课程
-                  2：退选课--CRUD
+                  3：退选课--CRUD
                            studentNotRollInCourse(int sId,int cId);//学生取消课程
-                  3：查看自己的选课成绩
-}                          student.showMyGrade();3：查看自己的选课成绩
+                  4：查看自己的选课成绩
+}                          student.showMyGrade();
 case:老师{
           while循环展示ui操作界面：
                    1：查看自己教的课程
                            自己vector的course容器课程展示
                    2：给学生成绩打分
-                        --根据teacher-》绑定的course-》再对学生打分-》学生-》导入课程和分数
+                        --根据teacher->绑定的course->再对学生打分->学生->导入课程和分数
                    3:查看学生成绩--显示课程
-                           tacher-》course容器-》学生-》展示课程分数
+                           tacher->course容器->学生->展示课程分数
 
 
 }
@@ -151,11 +151,11 @@ case:老师{
 
 
 
-//待优化
-选课逻辑判断是否已经选择了
+//已优化
+选课逻辑判断是否已经选择了，
+    Student构造默认添加课程分数测试——实现学生查看课程成绩，实现教师查看自己教授课程对应所有学生成绩——功能实现
 
-
-
+打分判断1-100
 
 
 

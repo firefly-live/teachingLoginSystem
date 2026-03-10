@@ -21,12 +21,14 @@ public:
    const string showInformation();//展示课程信息
     const void useIdshowName(int Cid);//通过课程id号展示课程名字
 
-    void scoreGrades(int score);//由老师类传入，然后调用studet的打分，且调入自己的课程名字
+    void scoreGrades();//由老师类传入，然后调用studet的打分，且调入自己的课程名字
 
     bool operator==(Course* course);//检查course的两个对象是否相等
     void operator=(Course* course);//检查course的两个对象是否相等
 
     void popStudent(Student* student);//推出student的对象
+
+    void showStudent();//展示选了课程的学生
 
     void showStudentGrades();//依次调用选课学生，依次展示学生分数
 private:
@@ -34,6 +36,7 @@ private:
     string name;
     vector <Student*> students;
 };
+
 
 
  const void Course::useIdshowName(int Cid){
@@ -83,5 +86,3 @@ void Course:: joinStudents(Student* student){
 const string Course:: showInformation(){
     return format("{}\t{}",name,Cid);
 }//展示课程信息::
-void Course:: scoreGrades(int score){
-}//由老师类传入，然后调用studet的打分，且调入自己的课程名字
