@@ -17,10 +17,14 @@ export class Student:public User{
 public:
     Student(){}
     Student(int Sid, string name)
-        : Sid(Sid), name(name){}
+        : Sid(Sid), name(name){
+        pair<int, int> test(1001,91);//测试
+        Grades.push_back(test);//测试
+}
     void showCourse(); //--对于学生来说，查看可选课程，对于老师来说，查看自己的教授课
     void operatingCourse();//2：选课--CRUD
-    void showMyGrade();     //3：查看自己的选课成绩
+    void showMyAllGrade();     //3：查看自己的所有选课成绩
+    void showMyGrade(int Cid);     //3：查看自己的对应课成绩
     void scoreGrades(int Cid,int score);//由课程传入，课程的名字和老师选择打分传入
 
 
@@ -38,9 +42,14 @@ private:
     int Sid;
     string name;
     vector<Course*> courses;//存储选择的课程
-    vector<pair<string, int>> Grades;//记录一系列课程的成绩
+    vector<pair<int, int>> Grades;//记录一系列课程的成绩id--分数
 
 };
+
+
+
+
+
 
 bool Student::operator==(Student* student){
     return (Sid==student->Sid&&name==student->name);

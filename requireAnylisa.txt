@@ -137,11 +137,11 @@ case:学生{
 case:老师{
           while循环展示ui操作界面：
                    1：查看自己教的课程
-                           teacher[i].showCourse()-> course的information()
+                           自己vector的course容器课程展示
                    2：给学生成绩打分
-                            void scoreGrades(int sId,int cId)//目标查找老师，课程，学生对象，然后调用打分程序 //打分
+                        --根据teacher-》绑定的course-》再对学生打分-》学生-》导入课程和分数
                    3:查看学生成绩--显示课程
-                           student.showMyGrade();
+                           tacher-》course容器-》学生-》展示课程分数
 
 
 }

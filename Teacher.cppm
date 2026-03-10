@@ -21,9 +21,11 @@ public:
     void scoreGrades(int score);//给学生打分，传入course
     const string showInformation();//展示老师的信息
 
+    //展示学生分数
+    void showStudentGrades();
+
 
     //常用逻辑判断
-    void joinCourse(Course* course);//增加教授课程
     bool hasId(int Ttid);
     void bindCourse(Course* couurse);//由传入的课程对象，然后推送到coursses容器
 private:
@@ -31,6 +33,19 @@ private:
     string name;//名字
     vector<Course*> courses;//通过课程得出选了这个课程的进而改学生成绩
 };
+
+
+void Teacher::showStudentGrades(){
+
+    for(auto cou: courses){
+        print("\n课程    课程id\t|\n");
+        print("{}\t|\n",cou->showInformation());
+        print("\t\t|-->姓名  分数\n");
+        cou->showStudentGrades();
+    }
+
+}//遍历课程容器然后进行遍历输出course保存你的student容器分数
+
 
 
  const string Teacher::showInformation(){

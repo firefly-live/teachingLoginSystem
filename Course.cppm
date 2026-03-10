@@ -19,14 +19,16 @@ public:
     bool hasId(int Ccid); // 查看是否有这个课程
     void joinStudents(Student* student);
    const string showInformation();//展示课程信息
+    const void useIdshowName(int Cid);//通过课程id号展示课程名字
 
     void scoreGrades(int score);//由老师类传入，然后调用studet的打分，且调入自己的课程名字
 
     bool operator==(Course* course);//检查course的两个对象是否相等
     void operator=(Course* course);//检查course的两个对象是否相等
 
-    void popStudent(Student* student);
+    void popStudent(Student* student);//推出student的对象
 
+    void showStudentGrades();//依次调用选课学生，依次展示学生分数
 private:
     int Cid;
     string name;
@@ -34,6 +36,9 @@ private:
 };
 
 
+ const void Course::useIdshowName(int Cid){
+    print("\n{}",name);
+}//通过课程id号展示课程名字
 
 
 
