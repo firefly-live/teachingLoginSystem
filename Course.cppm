@@ -81,6 +81,14 @@ bool Course:: hasId(int Ccid){
 
 } // 查看是否有这个课程
 void Course:: joinStudents(Student* student){
+    for(auto &stu:students)
+    {
+        if(stu==student)
+        {
+            print("该对象已在容器中，正在退出\n");
+            return;
+        }
+    }
     students.push_back(student);//导入学生信息到课程
 }
 const string Course:: showInformation(){

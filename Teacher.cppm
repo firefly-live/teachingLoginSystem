@@ -15,8 +15,8 @@ export class Teacher :public User{
 
 public:
     Teacher(){};
-    Teacher(int Tid, string name)
-        : Tid(Tid), name(name){}
+    Teacher(int Tid, string name,string userAccount, string userPasssword)
+        : User(userAccount,userPasssword),Tid(Tid), name(name){}
     void showCourse(); //--对于学生来说，查看可选课程，对于老师来说，查看自己的教授课
     void scoreGrades();//给学生打分，传入course
     const string showInformation();//展示老师的信息
@@ -37,7 +37,7 @@ private:
 
 void Teacher::scoreGrades(){
     print("\n课程\t课程id号\n");
-    for(auto cour: courses)
+    for(auto &cour: courses)
     {
         print("{}\n",cour->showInformation());//展示当前课程
         cour->showStudent();//展示该课程有哪些学生
@@ -49,7 +49,7 @@ void Teacher::scoreGrades(){
 
 void Teacher::showStudentGrades(){
 
-    for(auto cou: courses){
+    for(auto &cou: courses){
         print("\n课程    课程id\t|\n");
         print("{}\t|\n",cou->showInformation());
         print("\t\t|-->姓名  分数\n");
@@ -67,7 +67,7 @@ void Teacher::showStudentGrades(){
 
 void Teacher::showCourse(){
 
-   for(auto cour:courses)
+   for(auto &cour:courses)
    {
        string getInformation=cour->showInformation();
        print("{}\t{}\n",name,getInformation);

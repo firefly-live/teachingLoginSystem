@@ -16,8 +16,8 @@ export class Student:public User{
 
 public:
     Student(){}
-    Student(int Sid, string name)
-        : Sid(Sid), name(name){
+    Student(int Sid, string name,string userAccount, string userPasssword)
+        : User(userAccount,userPasssword),Sid(Sid), name(name){
         //pair<int, int> test(1001,91);//测试
         //Grades.push_back(test);//测试
 }
@@ -52,7 +52,7 @@ private:
     {
         if(grade.first==Cid)
         {
-         print("grade.first==Cid分数修改完毕\n");
+            print("grade.first==Cid分数修改完毕\n");
             grade.second=score;
             return;
         }
@@ -88,7 +88,18 @@ void Student::operator=(Student* student){
 
 
 void Student::joinCourse(Course* course){
+
+    for(auto &cou:courses)
+    {
+        if(cou==course){
+        print("已选该课程，请勿重选\n");
+        return;
+    }
+
+    }
     courses.push_back(course);
+     print("添加专业课程成功\n");
+
 }//添加课程信息
 void Student::popCourse(Course* course){
 
