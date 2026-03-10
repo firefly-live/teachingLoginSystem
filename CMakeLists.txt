@@ -33,8 +33,8 @@ set(MODULE_INTERFACE_FILES
 set(FileAll_FILES
     #${MODULE_LIB_DIR1}/utils.cppm         #添加模块库的模块接口单元
     #math.cppm
-    requireAnylisa.txt
-    README.md# 模块接口单元
+    ./doc/requireAnylisa.txt
+    ./doc/README.md# 模块接口单元
 )
 
 
