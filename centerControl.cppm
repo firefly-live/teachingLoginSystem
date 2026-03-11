@@ -17,6 +17,7 @@ import psql;
 using std::cin;
 using std::string;
 using std::vector;
+using std::stringstream;
 
 export class CenterControl
 {
@@ -67,8 +68,8 @@ void CenterControl::studentRollInCourse(int Sid, int Cid)
             {
                 if(cou->hasId(Cid))
                 {
-                   stu->joinCourse(cou); //学生对象-》加入课程
-                    cou->joinStudents(stu); //课程对像->加入学生
+                   stu->joinCourse(cou); //学生对象-》加入课程会判断是否已经有该对象
+                    cou->joinStudents(stu); //课程对像->加入学生//会自动判断已经有无这个对象
                 }
             }
         }
@@ -96,33 +97,105 @@ void CenterControl::initilize()
     //数据库初始化
     ps.InitleTable();
 
-     print("正在从数据库中读取信息.....\n");
+    print("正在从数据库中读取信息.....\n");
+    vector<string> getAllfromSql; //存储数据库当中的字符串，一行作为一个vector的子对象
 
 
+    //通过读取数据表自动化存储数据表的学生信息------读取数据表学生信息并且创建相应对象
+    ps.selectTable("select * from student20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
+    for (auto aLine : getAllfromSql) {
+        stringstream ss(aLine); //将获取的字符串作为了流依次赋值
+        int Sid;
+        string name, account, password;
+        ss >> Sid >> name >> account >> password; //将获取到的包含信息的字符串依次赋值给对应类型
+        students.push_back(new Student(Sid, name, account, password)); //将得到的信息依次构建到student容器中
+        //print("{} {} {} {}\n",Sid,name,account,password);
+    }
+
+    getAllfromSql.clear(); //清除之前存储的信息
+
+    //通过读取数据表自动化存储数据表的教师信息------读取数据表教师信息并且创建相应对象
+    ps.selectTable("select * from teacher20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
+    for (auto aLine : getAllfromSql) {
+        stringstream ss(aLine); //将获取的字符串作为了流依次赋值
+        int Tid;
+        string name, account, password;
+        ss >> Tid >> name >> account >> password; //将获取到的包含信息的字符串依次赋值给对应类型
+        teachers.push_back(new Teacher(Tid, name, account, password)); //将得到的信息依次构建到student容器中
+        //print("{} {} {} {}\n",Tid,name,account,password);
+    }
+
+    getAllfromSql.clear(); //清除之前存储的信息
+
+    //通过读取数据表自动化读取数据表的教师信息------读取数据表课程信息并且创建相应对象
+    ps.selectTable("select * from course20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
+    for (auto aLine : getAllfromSql) {
+        stringstream ss(aLine); //将获取的字符串作为了流依次赋值
+        int Cid;
+        string name;
+        ss >> Cid >> name; //将获取到的包含信息的字符串依次赋值给对应类型
+        courses.push_back(new Course(Cid, name)); //将得到的信息依次构建到student容器中
+        //print("{} {}\n",Cid,name);
+    }
+
+
+
+    getAllfromSql.clear(); //清除之前存储的信息
+
+    //通过读取数据表自动化读取数据表的教师课程信息------读取数据表课程信息并且调用teacherBindCourse();绑定教师和课程函数
+    ps.selectTable("select * from teachercourse20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
+    for (auto aLine : getAllfromSql) {
+        stringstream ss(aLine); //将获取的字符串作为了流依次赋值
+        int Tid, Cid;
+        ss >> Tid >> Cid; //将获取到的包含信息的字符串依次赋值给对应类型
+        teacherBindCourse(Tid, Cid); //读取course和teacher表依次绑定课程
+        //print("{} {}\n", Tid, Cid);
+    }
+
+
+
+    getAllfromSql.clear(); //清除之前存储的信息
+
+    //通过读取数据表自动化读取数据表的学生课程信息------调用打分你程序，给对象赋值分数
+    ps.selectTable("select * from studentcourse20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
+    for (auto aLine : getAllfromSql) {
+        stringstream ss(aLine); //将获取的字符串作为了流依次赋值
+        int Sid, Cid, grades;
+        ss >> Sid >> Cid >> grades; //将获取到的包含信息的字符串依次赋值给对应类型
+        for (auto stu : students) {
+            if (stu->hasId(Sid)) {
+                stu->scoreGrades(Cid, grades);//这里的Cid导入后进入执行函数打分操作，该接口也是教师打分函数的赋值主接口
+                studentRollInCourse(Sid,Cid);//会自动绑定学生和课程信息
+                break;//找到目标后自动退出，进行查看下一行的数据
+            }
+
+        }//遍历学生容器，找到目标对象，然后将分数依次赋值
+
+        print("{} {} {}\n",Sid,Cid,grades);
+    }
     //1开头：学生id
     //2开头：课程id
     //3开头：老师id
-    students.push_back(new Student(2001, "Qiong1","Qiong1","2")); //登入学生信息
-    students.push_back(new Student(2002, "Qiong2","Qiong2","2")); //登入学生信息
-    students.push_back(new Student(2003, "Qiong3","Qiong3","2")); //登入学生信息
-    students.push_back(new Student(2004, "Qiong4","Qiong4","2")); //登入学生信息
+    //students.push_back(new Student(2001, "Qiong1","Qiong1","2")); //登入学生信息
+    //students.push_back(new Student(2002, "Qiong2","Qiong2","2")); //登入学生信息
+    //students.push_back(new Student(2003, "Qiong3","Qiong3","2")); //登入学生信息
+    //students.push_back(new Student(2004, "Qiong4","Qiong4","2")); //登入学生信息
 
-    courses.push_back(new Course(1001, "math"));
-    courses.push_back(new Course(1002, "C++"));
-    courses.push_back(new Course(1003, "data_structure"));
+    //courses.push_back(new Course(1001, "math"));
+    //courses.push_back(new Course(1002, "C++"));
+    //courses.push_back(new Course(1003, "data_structure"));
 
-    teachers.push_back(new Teacher(3001, "Ji","Ji","3"));
-    teachers.push_back(new Teacher(3002, "wa","Wa","3"));
+    //teachers.push_back(new Teacher(3001, "Ji","Ji","3"));
+    //teachers.push_back(new Teacher(3002, "wa","Wa","3"));
 
-    CenterControl::teacherBindCourse(3001, 1001);
+    //CenterControl::teacherBindCourse(3001, 1001);
 
-    CenterControl::teacherBindCourse(3002, 1003);
+    //CenterControl::teacherBindCourse(3002, 1003);
 
 
     print("读取成功\n");
     print("按回车键继续运行程序....\n");
     getchar();
-
 
     //测试函数，直接加入到里面，课程加入学生，学生加入课程，测试教师打分
     //studentRollInCourse(2001,1001);

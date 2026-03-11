@@ -13,38 +13,43 @@ import std;
 
 using std::print;
 using std::string;
+using std::vector;
 
 
 //常用数据库sql语句
 
 //=----------------------------------------创建表的sql语句
 
-const string creaStudentTable = "create table IF NOT EXISTS student ("
+const string creaStudentTable = "create table IF NOT EXISTS student20240511604041 ("
         " id bigint primary key,"
-        " name varchar(20) not null"
+        " name varchar(20) not null,"
+        "account varchar(20) not null,"
+        "password varchar(20) not null"
 ")";//学生表
 
-const string creaCourseTable = "create table IF NOT EXISTS course("
+const string creaCourseTable = "create table IF NOT EXISTS course20240511604041("
             "id bigint primary key,"
             "name varchar(20) not null"
             ")";//可选课程表
 
-const string creaStudentCourseTable = "create table IF NOT EXISTS studentcourse("
-            "student_id bigint references student(id),"
-            "course_id bigint references course(id),"
+const string creaStudentCourseTable = "create table IF NOT EXISTS studentcourse20240511604041("
+            "sid bigint,"
+            "cid bigint ,"
             "grades   int check (grades<100 and grades>0),"
-            "primary key(student_id,course_id)"
+            "primary key(sid,cid)"
     ")";//学生课程关系表
 
-const string createTeachertable = "create table IF NOT EXISTS teacher("
-            "id bigint primary key,"
-            "name varchar(20) not null"
+const string createTeachertable = "create table IF NOT EXISTS teacher20240511604041("
+        " id bigint primary key,"
+        " name varchar(20) not null,"
+        "account varchar(20) not null,"
+        "password varchar(20) not null"
     ")";//教师表
 
-const string createTeacherCourseTable ="create table IF NOT EXISTS teachercourse("
-            "teacher_id bigint references teacher(id),"
-            "course_id bigint references course(id),"
-            "primary key(teacher_id,course_id)"
+const string createTeacherCourseTable ="create table IF NOT EXISTS teachercourse20240511604041("
+            "tid bigint ,"
+            "cid bigint ,"
+            "primary key(tid,cid)"
     ")";//教师课程关系表
 
 
@@ -89,11 +94,12 @@ public:
 
     static Psql& getControlsql();//获取静态管理对象
 
-    void selectTable(const char *input);//查的接口
+    void selectTable(const char *input,vector<string> &fromSql);//查的接口
     void insertTable(const string &table,const string &date1,const string &date2);//插入接口
     void insertTeacherTable(const string &table,const string &date1,const string &date2,const string &date3);//插入接口2
 
     void InitleTable();//初始化创建表的操作，在计算机中创建表
+    void creatTable(string sql);
 private:
     const char *constr;//连接到的口
     PGconn* conclass;//连接端口对象
@@ -102,7 +108,22 @@ private:
 
 //------------------------------------------------------------------数据库和程序的命令接口实现----------------------------------------------
 
+void Psql::creatTable(string sql){
+    // 2. 执行 SQL
+    PGresult* res = PQexec(conclass, sql.c_str());
 
+    // 3. 获取执行状态
+    ExecStatusType status = PQresultStatus(res);
+
+    // 4. 判断是否成功
+    if (status == PGRES_COMMAND_OK) {
+        // CREATE TABLE 成功时返回 COMMAND_OK
+        print("表创建成功 (或已存在)\n");
+    }
+
+
+
+}
 
 
 
@@ -113,13 +134,13 @@ Psql::Psql():constr("host=localhost dbname=postgres user=postgres password= port
     conclass=PQconnectdb(constr);//连接到数据库，用管理员权限连接
 
 if (PQstatus(conclass) == CONNECTION_OK) {
-    printf("✅ 连接成功！\n");
+    printf("连接成功！\n");
     printf("数据库: %s\n", PQdb(conclass));
     printf("用户: %s\n", PQuser(conclass));
     printf("主机: %s\n", PQhost(conclass));
     printf("端口: %s\n", PQport(conclass));
 } else {
-    printf("❌ 连接失败: %s\n", PQerrorMessage(conclass));
+    printf("连接失败: %s\n", PQerrorMessage(conclass));
 }
 
 
@@ -137,7 +158,7 @@ Psql& Psql::getControlsql(){
 
 
 //查询函数接口
-void Psql::selectTable(const char *input){
+void Psql::selectTable(const char *input,vector<string> &fromSql){
     PGresult *res=PQexec(conclass,input);//查询获取对象指针
 
     //查询成功则会输出信息
@@ -146,38 +167,18 @@ void Psql::selectTable(const char *input){
         int row=PQntuples(res);
         int cols = PQnfields(res);
 
-        for(int j=0;j<cols;j++)
-        {
-               print("===========",input);
-        }
-
-        print("\n");//换行
-
-
-        //打印列名
-        for(int j=0;j<cols;j++)
-        {
-              print("\t{} ",PQfname(res,j));//获取到列索引的列名字
-        }
-
-        print("\n");//换行
-
         for(int i=0;i<row;i++){
+            string aLine = {};
             for(int j=0;j<cols;j++)
             {
-                const char*va=PQgetvalue(res,i,j);//获取i行0列的信息
-                print("\t{} ",va);
+                aLine += " ";
+                const char *va = PQgetvalue(res, i, j); //获取i行0列的信息
+                aLine += va;//添加到一行中的string对象中
+                //print("\t{} ",va);
             }
-            print("\n");
+            //print("{}\n", aLine);
+            fromSql.push_back(aLine);//将多行导入到vector<string>中，然后准备处理
         }
-
-
-        for(int j=0;j<cols;j++)
-        {
-               print("===========",input);
-        }
-
-        print("\n");//换行
 
     }else{
        print("Query failed: {}\n", PQresultErrorMessage(res));//打印具体错误
@@ -291,11 +292,11 @@ void Psql::InitleTable(){
     const string teacherTable="teacher";
     const string teacherCourseTable="teachercourse";
 
-    PQexec(conclass,creaStudentTable.c_str());
-    PQexec(conclass,creaCourseTable.c_str());
-    PQexec(conclass,creaStudentCourseTable.c_str());
-   PQexec(conclass,createTeachertable.c_str());
-    PQexec(conclass,createTeacherCourseTable.c_str());
+    creatTable(creaStudentTable);
+    creatTable(creaCourseTable);
+    creatTable(creaStudentCourseTable);
+    creatTable(createTeachertable);
+    creatTable(createTeacherCourseTable);
 
  }
 

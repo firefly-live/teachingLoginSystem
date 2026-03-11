@@ -1,40 +1,133 @@
-                    课程选课系统，v1.1 增加账号密码登录,选择学生教师，然后输入账号密码登录到系统，选择功能--
+课程选课系统，v2.0 增加账号密码登录,选择学生教师，然后输入账号密增加qml数据库存数据持久化
+码登录到系统，选择功能--
+数据库存储功能设计：
+
+
+
 
 qml数据库功能:
-        在程序启动时加载数据，没有该数据库创建，然后运行程序，当程序需结束的时候，读取各个容器相关信息导入到相关的数据库中保存
-        centerControl::initilize();
-        centerControl::saveEndIntoSql();
-        主要的两个函数
+在程序启动时加载数据，没有该数据库创建，然后运行程序，当程序需结束的时候，读取各个容器相关信息导入到相关的数据库中保存
+centerControl::initilize();
+centerControl::saveEndIntoSql();
+这两个为数据操作主要的两个函数
+
+数据表设计
+course{
+    name
+    id
+}//课程表
+student{
+    name
+    id
+    account
+    password
+}学生表
+teacher{
+    name
+    id
+    account
+    password
+}教师表
+studentCourse{
+    sid
+    cid
+    grades
+}学生课程表
+teachercourse{
+    tid
+    cid
+}教师课程表
+
+融合程序实现方法，调用psql对应函数实现读取操作
+
+程序运行会调用--〉
+	centerControl::initilize()｛
+	初始化psql对象，psql对象会检查有无数据表，没有则创建表，命名是学号+表名字
+	程序首先读取数据表中有无数据，有数据时，开始读取逻辑{
+        		读取course，student,teacher表都为对象表,读取到相对应的数据，比较方便直接
+                 依次courses.push_back()
+                 students.push_back()
+                 teachers.push_back()
+
+                 关系表studencourse表，读取sid，循环查找students容器，找到目标对象，传入关系表同一行的cid，同一行的分数值
+                 ，调用scoregrades打分函数，分别传入cid和grade
+                 在scoregrades函数中会判断该cid是否已经打过分了，然后grades.push_back(pair<int,int>(cid,grades));
+                 然后将此行的sid，cid调用成员函数studentRollIncourse()；
+
+
+                 关系表teachercourse表，读取同一行的tid和cid，通过teacherBindCourse()绑定教师课程，教师将课程对象导入自身容器
+
+
+                 ,,,,,,,,初始化完毕，进行程序逻辑运行，按账号密码登录到对应的
+
+
+
+    		}
+            无数据直接进行程序逻辑运行
+
+	｝
+
+程序结束时会调用-->
+			centerControl::saveEndIntoSql(){
+                将该成员函数分别设置为student,teacher,course,user的友元函数，便于对数据库进行操作
+                对象表：teacher,course,student,直接获取相对应的属性，然后insert到对应数据表
+
+                关系表studencourse表,操作students容器对象
+                	，获取student对象的sid，student对象的vector<pair<int, int>> Grades
+                    ;就能访问cid和grade，然后insert，每个学生的每个课程以及成绩就能存储到表中
+                关系表teachercourse表，操作teachers容器对象
+                	teacher对象中含有course容器，依次获取teacher的tid和容器的每个cid
+                    然后insert到关系表，这样每个教师对应的课程关系就存储到表中
+
+
+            }
+
+
+
+
+
+
+
+
+
+
+
 
 
 大体框架：首先实现程序逻辑，再次实现sql数据库搭配程序存储数据,然后优化整体，比如登陆用户名密码
 
 
 user通过系统登陆，学生老师不同的操作权限，
-    学生：1:查看已经选择过的课程---对应老师显示，
-         2：选课程--CRUD，
-         3：退选课程
-         4:查看自己的选课的成绩
-         5:退出学生操作系统
+学生：1:
+查看已经选择过的课程---对应老师显示，
+2：选课程--CRUD，
+3：退选课程
+4:
+查看自己的选课的成绩
+5:
+退出学生操作系统
 
-    老师：1：查看自己教的课程
-         2：给学生成绩打分
-         3:查看学生成绩--显示课程
-         4:退出教师操作系统
+老师：1：查看自己教的课程
+2：给学生成绩打分
+3:
+查看学生成绩--显示课程
+4:
+退出教师操作系统
 
 
 程序逻辑以及类实现----
 
-A:目标用户user：老师Teacher，学生Student
-            --合并基类User,老师学生继承，User函数指针操作老师和学生对像
+A:
+目标用户user：老师Teacher，学生Student
+--合并基类User,老师学生继承，User函数指针操作老师和学生对像
 
 老师学生共同方法名字：1：showCourse（）---对于学生来说，查看可选课程，对于老师来说，查看自己的教授课
 
 
 //--------------------------------------类实现
-       export class User{
+export class User {
 public:
-    User(){};
+    User() {};
     User(string userAccount, string userPasssword): userAccount(userAccount), userPasssword(userPasssword) {}
     virtual void showCourse() = 0; //--对于学生来说，查看可选课程，对于老师来说，查看自己的教授课
 private:
@@ -44,12 +137,12 @@ private:
 
 
 
-export class Teacher :public User{
+export class Teacher :public User {
 
 public:
-    Teacher(){};
+    Teacher() {};
     Teacher(int Tid, string name)
-        : Tid(Tid), name(name){}
+        : Tid(Tid), name(name) {}
     void showCourse(); //--对于学生来说，查看可选课程，对于老师来说，查看自己的教授课
     void scoreGrades();//给学生打分，传入course
     const string showInformation();//展示老师的信息
@@ -68,7 +161,7 @@ private:
 };
 
 
-void Teacher::scoreGrades(){
+void Teacher::scoreGrades() {
     print("\n课程\t课程id号\n");
     for(auto cour: courses)
     {
@@ -81,15 +174,15 @@ void Teacher::scoreGrades(){
 
 
 
-export class Student:public User{
+export class Student:public User {
 
 public:
-    Student(){}
+    Student() {}
     Student(int Sid, string name)
-        : Sid(Sid), name(name){
+        : Sid(Sid), name(name) {
         //pair<int, int> test(1001,91);//测试
         //Grades.push_back(test);//测试
-}
+    }
     void showCourse(); //--对于学生来说，查看可选课程，对于老师来说，查看自己的教授课
     void operatingCourse();//2：选课--CRUD
     void showMyAllGrade();     //3：查看自己的所有选课成绩
@@ -100,7 +193,7 @@ public:
     //常用逻辑判断
     bool hasId(int Id);//查看是否有这个学生
     void joinCourse(Course* course);//添加课程信息
-     void popCourse(Course* course);//退选课程信息
+    void popCourse(Course* course);//退选课程信息
     const string showInformaton();//展示学生信息
 
 
@@ -119,16 +212,16 @@ private:
 
 
 
-export  class Course{
+export  class Course {
 
 public:
-    Course(){}
+    Course() {}
 
     Course(int Cid, string name)
-        : Cid(Cid), name(name){}
+        : Cid(Cid), name(name) {}
     bool hasId(int Ccid); // 查看是否有这个课程
     void joinStudents(Student* student);
-   const string showInformation();//展示课程信息
+    const string showInformation();//展示课程信息
     const void useIdshowName(int Cid);//通过课程id号展示课程名字
 
     void scoreGrades();//由老师类传入，然后调用studet的打分，且调入自己的课程名字
@@ -190,35 +283,39 @@ private:
 1：CenterControl初始化控制对象,初始化确定有 ----课程，学生，老师的所有信息
 2：选择登陆方式loginMethod();
 
-case:学生{
+case:
+学生 {
 
-通过特定的一个学生对象进入，后续添加登陆密码等
+    通过特定的一个学生对象进入，后续添加登陆密码等
 
 
-         while循环展示ui操作界面：
-                  1：查看已经选的课程---对应老师显示，
-                         students->showCourses()通过student内的Course容器，获取course容器中的课程名字和id
-                  2：选课--CRUD--自动展示所有可选课程（缺少是否已经选择选择过了，后续添加）
-                        先展示courses容器的所有信息，名称-id
-                        学生输入课程对应id--检查id在coursse是否存在，
-                        if判断后将course导入到student对象的courses容器中-同时将student对象导入到该课程对象的属性students容器中
-                  3：退选课--CRUD
-                            执行功能1显示已经选择了的课程信息，然后输入退选课程id,检查id后
-                            通过student对象，将对于课程对象pop出容器，同时，将课程对象中的student对象pop出容器
-                  4：查看自己的选课成绩
-                        通过自身的 c;容器输出课程信息和分数，course类有通过id查询课程名的函数，这样显示成绩时是课程名+分数
+    while循环展示ui操作界面：
+    1：查看已经选的课程---对应老师显示，
+    students->showCourses()通过student内的Course容器，获取course容器中的课程名字和id
+        2：选课--CRUD--自动展示所有可选课程（缺少是否已经选择选择过了，后续添加）
+        先展示courses容器的所有信息，名称-id
+        学生输入课程对应id--检查id在coursse是否存在，
+        if判断后将course导入到student对象的courses容器中-同时将student对象导入到该课程对象的属性students容器中
+        3：退选课--CRUD
+        执行功能1显示已经选择了的课程信息，然后输入退选课程id,检查id后
+        通过student对象，将对于课程对象pop出容器，同时，将课程对象中的student对象pop出容器
+        4：查看自己的选课成绩
+        通过自身的 c;
+容器输出课程信息和分数，course类有通过id查询课程名的函数，这样显示成绩时是课程名+分数
 }
-case:老师{
+case:
+老师 {
 通过特定的一个教师对象进入操作，后续添加登陆密码等
 
-          while循环展示ui操作界面：
-                   1：查看自己教的课程
-                          teacher对象有course容器，也就是教师教的课程，此时输出课程信息
-                   2：给学生成绩打分
-                        teacher对象有course容器，也就是教师教的课程，因为教师基本只教现阶段的课程，容器是后续扩展，course对象又包含student容器，展示有哪些学生选了课程，然后选择到该学生，输入分数,将分数和课程id导入到student内置的函数方法，然后通过vector<pair<int, int>> Grades
-                        将课程id和分数push进去
-                   3:查看学生成绩--显示课程
-                         teacher对象有course容器，course对象里有学生容器，调用学生的成绩展示函数，只展示当前科目的容器中，课程的分数，不会展示其他所有课程的分数
+while循环展示ui操作界面：
+    1：查看自己教的课程
+    teacher对象有course容器，也就是教师教的课程，此时输出课程信息
+    2：给学生成绩打分
+    teacher对象有course容器，也就是教师教的课程，因为教师基本只教现阶段的课程，容器是后续扩展，course对象又包含student容器，展示有哪些学生选了课程，然后选择到该学生，输入分数,将分数和课程id导入到student内置的函数方法，然后通过vector<pair<int, int>> Grades
+            将课程id和分数push进去
+        3:
+            查看学生成绩--显示课程
+            teacher对象有course容器，course对象里有学生容器，调用学生的成绩展示函数，只展示当前科目的容器中，课程的分数，不会展示其他所有课程的分数
 
 
 }
@@ -230,19 +327,10 @@ case:老师{
 
 //已优化
 选课逻辑判断是否已经选择了，
-    Student构造默认添加课程分数测试——实现学生查看课程成绩，实现教师查看自己教授课程对应所有学生成绩——功能实现
+Student构造默认添加课程分数测试——实现学生查看课程成绩，实现教师查看自己教授课程对应所有学生成绩——功能实现
 
- 打分判断1-100
+打分判断1-100
 
 
 //已优化
 选课判断是否已经选过了
-
-
-
-
-
-
-
-
-
