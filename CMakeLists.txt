@@ -14,6 +14,7 @@ add_executable(LoginSystem
 
 
 
+
 )
 
 set(MODULE_INTERFACE_FILES
@@ -25,6 +26,7 @@ set(MODULE_INTERFACE_FILES
     Course.cppm
     moduleObjects.cppm
     centerControl.cppm
+    Psql.cppm
     # 模块接口单元
 )
 
@@ -42,7 +44,8 @@ source_group("Module Interfaces" FILES ${MODULE_INTERFACE_FILES})
 
 source_group("DOUMEDNTS " FILES ${FileAll_FILES})
 
-
+find_package(PostgreSQL REQUIRED)
+target_link_libraries(LoginSystem PRIVATE ${PostgreSQL_LIBRARIES} pthread)
 
 target_sources(LoginSystem  PRIVATE FILE_SET cxx_modules TYPE CXX_MODULES
     BASE_DIRS                              # 配置BASE_DIRS，用于组织构建输出目录，以便构建不同目录中(同名的)模块文件.

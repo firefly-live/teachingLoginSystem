@@ -15,9 +15,6 @@ int main()
     CenterControl System= CenterControl:: getSystem();//获取管理对象
     System.loginMethod();
 
-
-    std::println("hello, C++");
-
     return 0;
 }
 

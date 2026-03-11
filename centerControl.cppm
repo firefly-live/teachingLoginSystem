@@ -13,6 +13,7 @@ import std;
 import :Student;
 import :Course;
 import :Teacher;
+import psql;
 using std::cin;
 using std::string;
 using std::vector;
@@ -27,6 +28,7 @@ public:
     void loginStudent(Student* student);      //选择学生方式
     void loginTeacher(Teacher* teacher);      //选择老师登陆方式
     void teacherBindCourse(int TId, int cId); //老师绑定课程
+    void saveEndIntoSql();
 
     void userAccTeacher();//教师账号密码登录
     void userAccStudent();//学生账号密码登录
@@ -52,6 +54,7 @@ private:
     vector<Student*> students; //存储学生类
     vector<Course*> courses;   //存储课程类
     vector<Teacher*> teachers; //存储老师类
+    Psql ps;//数据库管理
 };
 
 //测试功能函数用于辅助其他1函数逻辑判断
@@ -74,7 +77,13 @@ void CenterControl::studentRollInCourse(int Sid, int Cid)
 }
 
 
+//系统结束保存到sql
+void CenterControl::saveEndIntoSql()
+{
+    print("正在保存信息到数据库中.....\n");
 
+
+}
 
 
 
@@ -84,29 +93,40 @@ void CenterControl::studentRollInCourse(int Sid, int Cid)
 //系统初始优化相关
 void CenterControl::initilize()
 {
+    //数据库初始化
+    ps.InitleTable();
+
+     print("正在从数据库中读取信息.....\n");
+
+
     //1开头：学生id
     //2开头：课程id
     //3开头：老师id
-    students.push_back(new Student(2001, "Qiong1","Qiong1","12345")); //登入学生信息
-    students.push_back(new Student(2002, "Qiong2","Qiong2","12345")); //登入学生信息
-    students.push_back(new Student(2003, "Qiong3","Qiong3","12345")); //登入学生信息
-    students.push_back(new Student(2004, "Qiong4","Qiong4","12345")); //登入学生信息
+    students.push_back(new Student(2001, "Qiong1","Qiong1","2")); //登入学生信息
+    students.push_back(new Student(2002, "Qiong2","Qiong2","2")); //登入学生信息
+    students.push_back(new Student(2003, "Qiong3","Qiong3","2")); //登入学生信息
+    students.push_back(new Student(2004, "Qiong4","Qiong4","2")); //登入学生信息
 
     courses.push_back(new Course(1001, "math"));
     courses.push_back(new Course(1002, "C++"));
     courses.push_back(new Course(1003, "data_structure"));
 
-    teachers.push_back(new Teacher(3001, "JiZi","1","1"));
-    teachers.push_back(new Teacher(3002, "waerte","2","2"));
+    teachers.push_back(new Teacher(3001, "Ji","Ji","3"));
+    teachers.push_back(new Teacher(3002, "wa","Wa","3"));
 
     CenterControl::teacherBindCourse(3001, 1001);
 
     CenterControl::teacherBindCourse(3002, 1003);
 
 
+    print("读取成功\n");
+    print("按回车键继续运行程序....\n");
+    getchar();
+
+
     //测试函数，直接加入到里面，课程加入学生，学生加入课程，测试教师打分
-    studentRollInCourse(2001,1001);
-    studentRollInCourse(2001,1003);
+    //studentRollInCourse(2001,1001);
+    //studentRollInCourse(2001,1003);
     //studentRollInCourse(2003,1001);
     //studentRollInCourse(2004,1001);
 
@@ -154,6 +174,7 @@ void CenterControl::loginMethod()
         break;
         }
     }
+    saveEndIntoSql();//保存
     print("感谢使用，按任意键推出\n");
     cin.get();
 } //选择登陆方式
