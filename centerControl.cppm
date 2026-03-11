@@ -96,8 +96,8 @@ void CenterControl::initilize()
     courses.push_back(new Course(1002, "C++"));
     courses.push_back(new Course(1003, "data_structure"));
 
-    teachers.push_back(new Teacher(3001, "JiZi","JiZi","123456"));
-    teachers.push_back(new Teacher(3002, "waerte","waerte","123456"));
+    teachers.push_back(new Teacher(3001, "JiZi","1","1"));
+    teachers.push_back(new Teacher(3002, "waerte","2","2"));
 
     CenterControl::teacherBindCourse(3001, 1001);
 
@@ -105,8 +105,8 @@ void CenterControl::initilize()
 
 
     //测试函数，直接加入到里面，课程加入学生，学生加入课程，测试教师打分
-    //studentRollInCourse(2001,1001);
-    //studentRollInCourse(2002,1001);
+    studentRollInCourse(2001,1001);
+    studentRollInCourse(2001,1003);
     //studentRollInCourse(2003,1001);
     //studentRollInCourse(2004,1001);
 
@@ -433,17 +433,16 @@ void Student::showMyGrade(int Cid)
 
 void Student::showMyAllGrade()
 {
-   // for (auto &grade : Grades) {
-   //     print("\t{} {}\n", grade.first, grade.second); //接着输出课程对于的分数，break取消查找，准备输出下一个课程
-   // }
-   // print("\n\n");//测试
+    //for (auto &grade : Grades) {
+    //    print("\t{} {}\n", grade.first, grade.second); //接着输出课程对于的分数，break取消查找，准备输出下一个课程
+    //}
+    //print("\n\n");//测试
 
 
     for (auto &grade : Grades) {
         for (auto &cou : courses) {
-            cou->useIdshowName(grade.first);//通过id查找课程名字然后输出
-            print("\t{}\n", grade.second);//接着输出课程对于的分数，break取消查找，准备输出下一个课程
-
+            if( cou->useIdshowName(grade.first))//通过id查找课程名字然后输出但是要检测course容器中的id是否对应，否则就会多输出
+                    print("\t{}\n", grade.second);//接着输出课程对于的分数，break取消查找，准备输出下一个课程
         }
     }
     print("\n");
