@@ -10,10 +10,10 @@ using std::vector;
 using std::pair;
 using std::print;
 class Course;
-
+export class CenterControl;
 
 export class Student:public User{
-
+     friend  void saveEndIntoSql(CenterControl &System);
 public:
     Student(){}
     Student(int Sid, string name,string userAccount, string userPasssword)
@@ -38,6 +38,8 @@ public:
     bool operator==(Student* student);//测试student对象是否相等的操作
     void operator=(Student* student);//测试student对象是否相等的操作
 
+     int getScorefromGrades(int Cid);//通过Cid得出该课程分数
+
 private:
     int Sid;
     string name;
@@ -46,20 +48,34 @@ private:
 
 };
 
+int Student::getScorefromGrades(int Cid)
+{
+    for (auto& gra : Grades) {
+        if (gra.first == Cid) {
+            int score = gra.second;
+            return score;
+        }
+    }
+    return -1;//每找到就返回-1;
+
+ }//通过Cid得出该课程分数
+
+
+
  void Student::scoreGrades(int Cid,int score){
 // 先判断Grades容器中有没有Cid这个pair容器，没有再push
     for(auto &grade:Grades)//&来引用修改分数
     {
         if(grade.first==Cid)
         {
-            print("grade.first==Cid分数修改完毕\n");
+            print("分数修改完毕\n");
             grade.second=score;
             return;
         }
     }
     pair<int ,int> p(Cid,score);
     Grades.push_back(p);
-    print("分数修改完毕\n");
+    print("打分完毕\n");
 }//由课程传入，课程的名字和老师选择打分传入
 
 

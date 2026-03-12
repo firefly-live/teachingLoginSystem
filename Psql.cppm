@@ -35,7 +35,7 @@ const string creaCourseTable = "create table IF NOT EXISTS course20240511604041(
 const string creaStudentCourseTable = "create table IF NOT EXISTS studentcourse20240511604041("
             "sid bigint,"
             "cid bigint ,"
-            "grades   int check (grades<100 and grades>0),"
+            "grades   int,"
             "primary key(sid,cid)"
     ")";//学生课程关系表
 
@@ -54,35 +54,6 @@ const string createTeacherCourseTable ="create table IF NOT EXISTS teachercourse
 
 
 
-//------------------------------------学生类sql
-const string showStudentTableStr="select * from student ";//sql查学生表
-
-const string showStudentTableStrOrdeBy="select * from Student Order BY id ASC";//正序查询学生表
-
-//------------------------------------教师类sql
-const string showTeacherTableStr="select * from teacher ";//sql查教师
-
-//-------------------------------------课程类sql
-const string showCourseTableStr="select * from course ";//sql查课程
-
-//-------------------------------------学生选课课程关系sql
-
-const string showStudentRollCourseTableStr="select name from course where id in (select course_id from studentcourse where student_id = ";//查看关系表
-const string deleteStudentControlCourseTableStr="delete from studentcourse where ";//删除选课的拼接语句
-const string insertStudentControlCourseTableStr="insert into studentcourse (course_id,student_id) values ";//选课的拼接语句
-
-
-
-//------------------------------------教师学生关系sql
-
-const string showCourseHaveStudentTableStr="select * from teacherstudent";
-
-
-
-
-
-
-
 //--------------------------------------------------------------接口类声明--------------------------------------------------------------------------------------------
 //创建接口类
 export class Psql{
@@ -94,8 +65,10 @@ public:
 
     static Psql& getControlsql();//获取静态管理对象
 
-    void selectTable(const char *input,vector<string> &fromSql);//查的接口
-    void insertTable(const string &table,const string &date1,const string &date2);//插入接口
+    void itemInintilize(const char *input,vector<string> &fromSql);//协助初始化
+    void insertTableStudentCourse(const string &table,const string &date1,const string &date2);//插入接口
+    void updateTableStudentGrades(const string &table, const string &date1, const string &date2,const string& date3);//插入接口2,用于3参数实现
+
     void insertTeacherTable(const string &table,const string &date1,const string &date2,const string &date3);//插入接口2
 
     void InitleTable();//初始化创建表的操作，在计算机中创建表
@@ -144,10 +117,6 @@ if (PQstatus(conclass) == CONNECTION_OK) {
 }
 
 
-
-
-
-
 }
 
 Psql& Psql::getControlsql(){
@@ -158,7 +127,7 @@ Psql& Psql::getControlsql(){
 
 
 //查询函数接口
-void Psql::selectTable(const char *input,vector<string> &fromSql){
+void Psql::itemInintilize(const char *input,vector<string> &fromSql){
     PGresult *res=PQexec(conclass,input);//查询获取对象指针
 
     //查询成功则会输出信息
@@ -189,19 +158,19 @@ void Psql::selectTable(const char *input,vector<string> &fromSql){
 
 
 //控制函数接口--增-插入
-void Psql::insertTable(const string &table,const string &date1,const string &date2){
+void Psql::insertTableStudentCourse(const string &table,const string &date1,const string &date2){
 
      string isExist;
-    if(table!="teachercourse"&&table!="studentcourse")//studentcourse和teachercourse的属性特殊性，单独分类
+    if(table!="teachercourse20240511604041"&&table!="studentcourse20240511604041")//studentcourse和teachercourse的属性特殊性，单独分类
     {
         isExist = "select count(*) from " + table + " where id = " +date1;//先查看存在不再插入
 
 
-    }else if(table=="teachercourse"){
+    }else if(table=="teachercourse20240511604041"){
          isExist = "select count(*) from " + table + " where teacher_id = " +date1+" AND course_id = "+date2;//先查看存在不再插入
-    }else if(table=="studentcourse")
+    }else if(table=="studentcourse20240511604041")
     {
-         isExist = "select count(*) from " + table + " where student_id = " +date1+" AND course_id =" +date2;//先查看存在不再插入
+         isExist = "select count(*) from " + table + " where sid = " +date1+" AND cid =" +date2;//先查看存在不再插入
 
     }
 
@@ -229,9 +198,9 @@ void Psql::insertTable(const string &table,const string &date1,const string &dat
         {
             insert = "INSERT INTO course (id, name) VALUES ("+date1+",'"+date2+"')";
 
-        }else if(table=="studentcourse")
+        }else if(table=="studentcourse20240511604041")
         {
-            insert = "INSERT INTO studentcourse (student_id,course_id) VALUES ("+date1+","+date2+")";
+            insert = "INSERT INTO studentcourse20240511604041 (sid,cid) VALUES ("+date1+","+date2+")" + "ON CONFLICT (sid, cid) DO NOTHING;";//重复性检测，如果有了，那就忽略
 
         }else if(table=="teachercourse")
         {
@@ -243,7 +212,7 @@ void Psql::insertTable(const string &table,const string &date1,const string &dat
 
         if(PQresultStatus(res1)==PGRES_COMMAND_OK)
         {
-            print("---sucessfully {}\n",PQcmdTuples(res));
+            print("---sucessfully or is exist {}\n",PQcmdTuples(res));
         }else{
             print("insert {} error\n",table);
         }
@@ -251,6 +220,26 @@ void Psql::insertTable(const string &table,const string &date1,const string &dat
 
     }
 }//插入接口
+
+
+
+void Psql::updateTableStudentGrades(const string &table, const string &date1, const string &date2, const string &date3)
+{
+    string insert{};
+    if (table == "studentcourse20240511604041") {
+        insert = "update studentcourse20240511604041 set grades= " + date3 + " where sid = " + date1
+                 + " And  cid = " + date2;
+    } //更新分数
+    //print("{}\n",insert);
+    PGresult *res1 = PQexec(conclass, insert.c_str());
+
+    if (PQresultStatus(res1) == PGRES_COMMAND_OK) {
+        print("---sucessfully {}\n", PQcmdTuples(res1));
+    } else {
+        fprintf(stderr, "❌ 数据库操作失败: %s\n", PQerrorMessage(conclass));
+
+    } //插入接口
+}
 
 void Psql::insertTeacherTable(const string &table,const string &date1,const string &date2,const string &date3){
     const string &findteacher="select count(*) from teacher where id = "+date1;

@@ -12,8 +12,9 @@ import Objects;
 int main()
 {
 
-    CenterControl System= CenterControl:: getSystem();//获取管理对象
+    CenterControl &System= CenterControl:: getSystem();//获取管理对象
     System.loginMethod();
+    saveEndIntoSql(System);
 
     return 0;
 }

@@ -18,18 +18,23 @@ using std::cin;
 using std::string;
 using std::vector;
 using std::stringstream;
+using std::to_string;
+
+
+ void saveEndIntoSql(CenterControl &System);//全局函数用于保存各个类的数据到数据库中，作为Student类和course类的友元函数
 
 export class CenterControl
 {
+    friend  void saveEndIntoSql(CenterControl &System);
 public:
     //系统初始优化相关
     void initilize();                         //初始化
-    static CenterControl getSystem();         //传出静态的管理对象
+    static CenterControl &getSystem();         //传出静态的管理对象
     void loginMethod();                       //选择登陆方式
     void loginStudent(Student* student);      //选择学生方式
     void loginTeacher(Teacher* teacher);      //选择老师登陆方式
     void teacherBindCourse(int TId, int cId); //老师绑定课程
-    void saveEndIntoSql();
+
 
     void userAccTeacher();//教师账号密码登录
     void userAccStudent();//学生账号密码登录
@@ -78,13 +83,44 @@ void CenterControl::studentRollInCourse(int Sid, int Cid)
 }
 
 
-//系统结束保存到sql
-void CenterControl::saveEndIntoSql()
+//系统结束保存到sql主要是student的studentcourse容器,
+void saveEndIntoSql(CenterControl &System)
 {
-    print("正在保存信息到数据库中.....\n");
+     //由于返回的是全局饮用对象，main函数传入对象
+
+    print("正在保存信息到数据库中请稍等.....\n");
+    //依次访问系统的students容器，便利容器，student单个对象，student单个对象的course容器有哪些course，course的Cid是多少，查找这个stu对象的vector<pair<int, int>> Grades中有该Cid没，有就插入分数，没有就插入空格到学生课程表中 -1表示每有该课程分数
+
+    for (auto stu : System.CenterControl::students) {
+        for (auto cou : stu->Student::courses) {
+            int Sid, Cid;
+            Sid = stu->Student::Sid;
+            Cid = cou->Course::Cid;
+            int score = stu->getScorefromGrades(Cid);
+            //先插入关系表,studntCourse关系,再通过分数修改对应列--考虑学生退选课程，原先数据库有，然后变没了
+            System.CenterControl::ps.insertTableStudentCourse("studentcourse20240511604041",
+                                                               to_string(Sid),
+                                                               to_string(Cid));
+            //print("\n\n{}\n\n", score);
+
+            if (score != -1) { //找到课程有分数会返回其他数字，这里就是该课程有分数
+                System.CenterControl::ps.updateTableStudentGrades("studentcourse20240511604041",
+                                                                   to_string(Sid),
+                                                                   to_string(Cid),
+                                                                   to_string(score));
+
+            }else{
+                System.CenterControl::ps.updateTableStudentGrades("studentcourse20240511604041",
+                                                                   to_string(Sid),
+                                                                   to_string(Cid),
+                                                                   to_string(-1));
+                    //找到课程无分数就返回-1//此时成绩为空，
+            }
+        }
+    }
 
 
-}
+}//全局函数用于保存各个类的数据到数据库中，作为Student类和course类的友元函数
 
 
 
@@ -102,7 +138,7 @@ void CenterControl::initilize()
 
 
     //通过读取数据表自动化存储数据表的学生信息------读取数据表学生信息并且创建相应对象
-    ps.selectTable("select * from student20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
+    ps.itemInintilize("select * from student20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
     for (auto aLine : getAllfromSql) {
         stringstream ss(aLine); //将获取的字符串作为了流依次赋值
         int Sid;
@@ -115,7 +151,7 @@ void CenterControl::initilize()
     getAllfromSql.clear(); //清除之前存储的信息
 
     //通过读取数据表自动化存储数据表的教师信息------读取数据表教师信息并且创建相应对象
-    ps.selectTable("select * from teacher20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
+    ps.itemInintilize("select * from teacher20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
     for (auto aLine : getAllfromSql) {
         stringstream ss(aLine); //将获取的字符串作为了流依次赋值
         int Tid;
@@ -128,7 +164,7 @@ void CenterControl::initilize()
     getAllfromSql.clear(); //清除之前存储的信息
 
     //通过读取数据表自动化读取数据表的教师信息------读取数据表课程信息并且创建相应对象
-    ps.selectTable("select * from course20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
+    ps.itemInintilize("select * from course20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
     for (auto aLine : getAllfromSql) {
         stringstream ss(aLine); //将获取的字符串作为了流依次赋值
         int Cid;
@@ -143,7 +179,7 @@ void CenterControl::initilize()
     getAllfromSql.clear(); //清除之前存储的信息
 
     //通过读取数据表自动化读取数据表的教师课程信息------读取数据表课程信息并且调用teacherBindCourse();绑定教师和课程函数
-    ps.selectTable("select * from teachercourse20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
+    ps.itemInintilize("select * from teachercourse20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
     for (auto aLine : getAllfromSql) {
         stringstream ss(aLine); //将获取的字符串作为了流依次赋值
         int Tid, Cid;
@@ -157,9 +193,11 @@ void CenterControl::initilize()
     getAllfromSql.clear(); //清除之前存储的信息
 
     //通过读取数据表自动化读取数据表的学生课程信息------调用打分你程序，给对象赋值分数
-    ps.selectTable("select * from studentcourse20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
+    ps.itemInintilize("select * from studentcourse20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
     for (auto aLine : getAllfromSql) {
         stringstream ss(aLine); //将获取的字符串作为了流依次赋值
+        print("studentcourse:\n {}", aLine);//调试
+
         int Sid, Cid, grades;
         ss >> Sid >> Cid >> grades; //将获取到的包含信息的字符串依次赋值给对应类型
         for (auto stu : students) {
@@ -198,14 +236,14 @@ void CenterControl::initilize()
     getchar();
 
     //测试函数，直接加入到里面，课程加入学生，学生加入课程，测试教师打分
-    //studentRollInCourse(2001,1001);
-    //studentRollInCourse(2001,1003);
-    //studentRollInCourse(2003,1001);
-    //studentRollInCourse(2004,1001);
+    studentRollInCourse(2001,1001);
+    studentRollInCourse(2001,1002);
+    studentRollInCourse(2001,1003);
+    studentRollInCourse(2001,1004);
 
 
 } //初始化
-CenterControl CenterControl::getSystem()
+CenterControl& CenterControl::getSystem()
 {
     static CenterControl LoginSys;
     LoginSys.initilize();
@@ -247,7 +285,6 @@ void CenterControl::loginMethod()
         break;
         }
     }
-    saveEndIntoSql();//保存
     print("感谢使用，按任意键推出\n");
     cin.get();
 } //选择登陆方式
@@ -462,6 +499,8 @@ void CenterControl::studentNotRollInCourse(Student* student)
 
 } //学生取消课程
 void CenterControl::showAllGradeOwnStudent(Student* student){
+    print("\n课程名字    分数 （显示-1表明教师没有打分，等待教师打分）\n");
+
     student->showMyAllGrade();
 }//展示当前学生的所有分数
 
@@ -539,7 +578,6 @@ void Student::showMyAllGrade()
                     print("\t{}\n", grade.second);//接着输出课程对于的分数，break取消查找，准备输出下一个课程
         }
     }
-    print("\n");
 }
 
 

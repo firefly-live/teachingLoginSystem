@@ -7,10 +7,12 @@ import std;
 using std::string;
 using std::vector;
 class Student;
+export class CenterControl;
 using std::print;
 
-export  class Course{
 
+export  class Course{
+      friend  void saveEndIntoSql(CenterControl &System);
 public:
     Course(){}
 
@@ -42,7 +44,7 @@ private:
  const bool Course::useIdshowName(int id){
     if(Cid==id)
     {
-        print("\n{}",name);//检查输入的cid号是否相等再输出
+        print("{}",name);//检查输入的cid号是否相等再输出
         return true;
     }else{
         return false;
