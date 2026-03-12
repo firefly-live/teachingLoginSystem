@@ -35,6 +35,8 @@ private:
 };
 
 
+
+
 void Teacher::scoreGrades(){
     print("\n课程\t课程id号\n");
     for(auto &cour: courses)

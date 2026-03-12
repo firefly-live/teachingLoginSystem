@@ -20,33 +20,33 @@ using std::vector;
 
 //=----------------------------------------创建表的sql语句
 
-const string creaStudentTable = "create table IF NOT EXISTS student20240511604041 ("
+const string creaStudentTable = "create table IF NOT EXISTS student2024051604041 ("
         " id bigint primary key,"
         " name varchar(20) not null,"
         "account varchar(20) not null,"
         "password varchar(20) not null"
 ")";//学生表
 
-const string creaCourseTable = "create table IF NOT EXISTS course20240511604041("
+const string creaCourseTable = "create table IF NOT EXISTS course2024051604041("
             "id bigint primary key,"
             "name varchar(20) not null"
             ")";//可选课程表
 
-const string creaStudentCourseTable = "create table IF NOT EXISTS studentcourse20240511604041("
+const string creaStudentCourseTable = "create table IF NOT EXISTS studentcourse2024051604041("
             "sid bigint,"
             "cid bigint ,"
             "grades   int,"
             "primary key(sid,cid)"
     ")";//学生课程关系表
 
-const string createTeachertable = "create table IF NOT EXISTS teacher20240511604041("
+const string createTeachertable = "create table IF NOT EXISTS teacher2024051604041("
         " id bigint primary key,"
         " name varchar(20) not null,"
         "account varchar(20) not null,"
         "password varchar(20) not null"
     ")";//教师表
 
-const string createTeacherCourseTable ="create table IF NOT EXISTS teachercourse20240511604041("
+const string createTeacherCourseTable ="create table IF NOT EXISTS teachercourse2024051604041("
             "tid bigint ,"
             "cid bigint ,"
             "primary key(tid,cid)"
@@ -109,7 +109,7 @@ void Psql::deleteCourseeStudent(const string &table, const string &Sid, const st
 
 
 
-    string deleteARow = "delete from studentcourse20240511604041 where sid = "+ Sid +" And  cid = "+Cid;//重复性检测，如果有了，那就忽略
+    string deleteARow = "delete from studentcourse2024051604041 where sid = "+ Sid +" And  cid = "+Cid;//重复性检测，如果有了，那就忽略
 
     //print("{}\n",insert);
     PGresult *res1=PQexec(conclass,deleteARow.c_str());
@@ -186,7 +186,7 @@ void Psql::itemInintilize(const char *input,vector<string> &fromSql){
 //控制函数接口--增-插入
 void Psql::insertTableStudentCourse(const string &table,const string &date1,const string &date2){
 
-       string insert = "INSERT INTO studentcourse20240511604041 (sid,cid) VALUES ("+date1+","+date2+")" + "ON CONFLICT (sid, cid) DO NOTHING;";//重复性检测，如果有了，那就忽略
+       string insert = "INSERT INTO studentcourse2024051604041 (sid,cid) VALUES ("+date1+","+date2+")" + "ON CONFLICT (sid, cid) DO NOTHING;";//重复性检测，如果有了，那就忽略
 
       //print("{}\n",insert);
         PGresult *res1=PQexec(conclass,insert.c_str());
@@ -205,8 +205,8 @@ void Psql::insertTableStudentCourse(const string &table,const string &date1,cons
 void Psql::updateTableStudentGrades(const string &table, const string &date1, const string &date2, const string &date3)
 {
     string insert{};
-    if (table == "studentcourse20240511604041") {
-        insert = "update studentcourse20240511604041 set grades= " + date3 + " where sid = " + date1
+    if (table == "studentcourse2024051604041") {
+        insert = "update studentcourse2024051604041 set grades= " + date3 + " where sid = " + date1
                  + " And  cid = " + date2;
     } //更新分数
     //print("{}\n",insert);
@@ -243,7 +243,7 @@ void Psql::InitleTable(){
  //将这些对象分别插入到表中，以便于读取,也可自定义
  void Psql::InserteInformationToSystem()
  {
-     const string insertStudentSql = "INSERT INTO student20240511604041 (id, name, account, password) VALUES "
+     const string insertStudentSql = "INSERT INTO student2024051604041 (id, name, account, password) VALUES "
                                      "(2001, 'Qiong1', 'Qiong1', '2'),"
                                      "(2002, 'Qiong2', 'Qiong2', '2'),"
                                      "(2003, 'Qiong3', 'Qiong3', '2'),"
@@ -252,7 +252,7 @@ void Psql::InitleTable(){
                                      "ON CONFLICT (id) DO NOTHING;";
 
      // 教师表插入语句
-     const string insertTeacherSql = "INSERT INTO teacher20240511604041 (id, name, account, password) VALUES "
+     const string insertTeacherSql = "INSERT INTO teacher2024051604041 (id, name, account, password) VALUES "
                                      "(3001, 'Ji1', 'Ji1', '3'),"
                                      "(3002, 'Ji2', 'Ji2', '3'),"
                                      "(3003, 'Ji3', 'Ji3', '3'),"
@@ -261,7 +261,7 @@ void Psql::InitleTable(){
                                      "ON CONFLICT (id) DO NOTHING;";
 
      // 课程表插入语句
-     const string insertCourseSql = "INSERT INTO course20240511604041 (id, name) VALUES "
+     const string insertCourseSql = "INSERT INTO course2024051604041 (id, name) VALUES "
                                     "(1001, 'math'),"
                                     "(1002, 'C++'),"
                                     "(1003, 'data_structure'),"
@@ -270,7 +270,7 @@ void Psql::InitleTable(){
                                     "ON CONFLICT (id) DO NOTHING;";
 
      // 教师课程关系表插入语句
-     const string insertTeacherCourseSql = "INSERT INTO teachercourse20240511604041 (tid, cid) VALUES "
+     const string insertTeacherCourseSql = "INSERT INTO teachercourse2024051604041 (tid, cid) VALUES "
                                            "(3001, 1001),"
                                            "(3002, 1002),"
                                            "(3003, 1003),"

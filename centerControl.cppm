@@ -100,19 +100,19 @@ void saveEndIntoSql(CenterControl &System)
             Cid = cou->Course::Cid;
             int score = stu->getScorefromGrades(Cid);
             //先插入关系表,studntCourse关系,再通过分数修改对应列--考虑学生退选课程，原先数据库有，然后变没了
-            System.CenterControl::ps.insertTableStudentCourse("studentcourse20240511604041",
+            System.CenterControl::ps.insertTableStudentCourse("studentcourse2024051604041",
                                                                to_string(Sid),
                                                                to_string(Cid));
             //print("\n\n{}\n\n", score);
 
             if (score != -1) { //找到课程有分数会返回其他数字，这里就是该课程有分数
-                System.CenterControl::ps.updateTableStudentGrades("studentcourse20240511604041",
+                System.CenterControl::ps.updateTableStudentGrades("studentcourse2024051604041",
                                                                    to_string(Sid),
                                                                    to_string(Cid),
                                                                    to_string(score));
 
             }else{
-                System.CenterControl::ps.updateTableStudentGrades("studentcourse20240511604041",
+                System.CenterControl::ps.updateTableStudentGrades("studentcourse2024051604041",
                                                                    to_string(Sid),
                                                                    to_string(Cid),
                                                                    to_string(-1));
@@ -142,7 +142,7 @@ void CenterControl::initilize()
 
 
     //通过读取数据表自动化存储数据表的学生信息------读取数据表学生信息并且创建相应对象
-    ps.itemInintilize("select * from student20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
+    ps.itemInintilize("select * from student2024051604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
     for (auto aLine : getAllfromSql) {
         stringstream ss(aLine); //将获取的字符串作为了流依次赋值
         int Sid;
@@ -155,7 +155,7 @@ void CenterControl::initilize()
     getAllfromSql.clear(); //清除之前存储的信息
 
     //通过读取数据表自动化存储数据表的教师信息------读取数据表教师信息并且创建相应对象
-    ps.itemInintilize("select * from teacher20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
+    ps.itemInintilize("select * from teacher2024051604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
     for (auto aLine : getAllfromSql) {
         stringstream ss(aLine); //将获取的字符串作为了流依次赋值
         int Tid;
@@ -168,7 +168,7 @@ void CenterControl::initilize()
     getAllfromSql.clear(); //清除之前存储的信息
 
     //通过读取数据表自动化读取数据表的教师信息------读取数据表课程信息并且创建相应对象
-    ps.itemInintilize("select * from course20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
+    ps.itemInintilize("select * from course2024051604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
     for (auto aLine : getAllfromSql) {
         stringstream ss(aLine); //将获取的字符串作为了流依次赋值
         int Cid;
@@ -183,7 +183,7 @@ void CenterControl::initilize()
     getAllfromSql.clear(); //清除之前存储的信息
 
     //通过读取数据表自动化读取数据表的教师课程信息------读取数据表课程信息并且调用teacherBindCourse();绑定教师和课程函数
-    ps.itemInintilize("select * from teachercourse20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
+    ps.itemInintilize("select * from teachercourse2024051604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
     for (auto aLine : getAllfromSql) {
         stringstream ss(aLine); //将获取的字符串作为了流依次赋值
         int Tid, Cid;
@@ -197,7 +197,7 @@ void CenterControl::initilize()
     getAllfromSql.clear(); //清除之前存储的信息
 
     //通过读取数据表自动化读取数据表的学生课程信息------调用打分你程序，给对象赋值分数
-    ps.itemInintilize("select * from studentcourse20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
+    ps.itemInintilize("select * from studentcourse2024051604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
     for (auto aLine : getAllfromSql) {
         stringstream ss(aLine); //将获取的字符串作为了流依次赋值
         //print("studentcourse:\n {}", aLine);//调试
@@ -508,7 +508,7 @@ void CenterControl::studentNotRollInCourse(Student* student)
             getchar();
 
 
-            ps.deleteCourseeStudent("studentcourse20240511604041",to_string(sid),to_string(Cid));
+            ps.deleteCourseeStudent("studentcourse2024051604041",to_string(sid),to_string(Cid));
 
             student->popCourse(cour); //pop出去自己选的课程
             cour->popStudent(student); //课程pop学生对象
@@ -611,7 +611,7 @@ void Student::scoreGrades(int Cid,int score){
         if(grade.first==Cid)
         {
             CenterControl &sys =CenterControl ::getSystem();
-            sys.CenterControl::ps.updateTableStudentGrades("studentcourse20240511604041",
+            sys.CenterControl::ps.updateTableStudentGrades("studentcourse2024051604041",
                                                            to_string(Sid),
                                                            to_string(Cid),
                                                            to_string(score));

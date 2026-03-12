@@ -134,6 +134,8 @@ teachercourse{
 
 融合程序实现方法，调用psql对应函数实现读取操作
 
+
+
 程序运行会调用--〉
 	centerControl::initilize()｛
 	初始化psql对象，psql对象会检查有无数据表，没有则创建表，命名是学号+表名字
