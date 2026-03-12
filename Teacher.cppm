@@ -35,6 +35,8 @@ private:
 };
 
 
+
+
 void Teacher::scoreGrades(){
     print("\n课程\t课程id号\n");
     for(auto &cour: courses)
@@ -60,18 +62,18 @@ void Teacher::showStudentGrades(){
 
 
 
- const string Teacher::showInformation(){
+const string Teacher::showInformation(){
     return ("{} {}",Tid,name);
- }//展示老师的信息
+}//展示老师的信息
 
 
 void Teacher::showCourse(){
 
-   for(auto &cour:courses)
-   {
-       string getInformation=cour->showInformation();
-       print("{}\t{}\n",name,getInformation);
-   }
+    for(auto &cour:courses)
+    {
+        string getInformation=cour->showInformation();
+        print("{}\t{}\n",name,getInformation);
+    }
 }//展示自己的课程
 
 bool Teacher::hasId(int Ttid){

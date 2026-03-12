@@ -13,14 +13,14 @@ class Course;
 export class CenterControl;
 
 export class Student:public User{
-     friend  void saveEndIntoSql(CenterControl &System);
+    friend  void saveEndIntoSql(CenterControl &System);
 public:
     Student(){}
     Student(int Sid, string name,string userAccount, string userPasssword)
         : User(userAccount,userPasssword),Sid(Sid), name(name){
         //pair<int, int> test(1001,91);//测试
         //Grades.push_back(test);//测试
-}
+    }
     void showCourse(); //--对于学生来说，查看可选课程，对于老师来说，查看自己的教授课
     void operatingCourse();//2：选课--CRUD
     void showMyAllGrade();     //3：查看自己的所有选课成绩
@@ -31,14 +31,14 @@ public:
     //常用逻辑判断
     bool hasId(int Id);//查看是否有这个学生
     void joinCourse(Course* course);//添加课程信息
-     void popCourse(Course* course);//退选课程信息
+    void popCourse(Course* course);//退选课程信息
     const string showInformaton();//展示学生信息
 
 
     bool operator==(Student* student);//测试student对象是否相等的操作
     void operator=(Student* student);//测试student对象是否相等的操作
 
-     int getScorefromGrades(int Cid);//通过Cid得出该课程分数
+    int getScorefromGrades(int Cid);//通过Cid得出该课程分数
 
 private:
     int Sid;
@@ -58,7 +58,7 @@ int Student::getScorefromGrades(int Cid)
     }
     return -1;//每找到就返回-1;
 
- }//通过Cid得出该课程分数
+}//通过Cid得出该课程分数
 
 
 
@@ -69,7 +69,7 @@ const string Student::showInformaton(){
     return format("{} {}",name,Sid);
 }//展示学生信息
 
- bool Student::hasId(int Id){
+bool Student::hasId(int Id){
     return Sid==Id;
 }//查看是否有这个学生
 
@@ -91,18 +91,18 @@ void Student::joinCourse(Course* course){
     for(auto &cou:courses)
     {
         if(cou==course){
-        print("已选该课程，请勿重选\n");
-        return;
-    }
+            print("已选该课程，请勿重选\n");
+            return;
+        }
 
     }
     courses.push_back(course);
-     print("添加专业课程成功\n");
+    print("添加专业课程成功\n");
 
 }//添加课程信息
 void Student::popCourse(Course* course){
 
-//遍历找到对象，然后pop出去
+    //遍历找到对象，然后pop出去
     for(int i=0;i<courses.size();i++)
     {
         if(courses[i]==course)
@@ -115,7 +115,7 @@ void Student::popCourse(Course* course){
         }
 
     }
-      print("未选该课程，请查看自己输入是否正确\n");//没有该对象则返回消息
+    print("未选该课程，请查看自己输入是否正确\n");//没有该对象则返回消息
 }//退选课程信息
 
 

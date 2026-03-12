@@ -134,11 +134,13 @@ teachercourse{
 
 融合程序实现方法，调用psql对应函数实现读取操作
 
+
+
 程序运行会调用--〉
-	centerControl::initilize()｛
-	初始化psql对象，psql对象会检查有无数据表，没有则创建表，命名是学号+表名字
-	程序首先读取数据表中有无数据，有数据时，开始读取逻辑{
-        		读取course，student,teacher表都为对象表,读取到相对应的数据，比较方便直接
+        centerControl::initilize()｛
+        初始化psql对象，psql对象会检查有无数据表，没有则创建表，命名是学号+表名字
+        程序首先读取数据表中有无数据，有数据时，开始读取逻辑{
+                        读取course，student,teacher表都为对象表,读取到相对应的数据，比较方便直接
                  依次courses.push_back()
                  students.push_back()
                  teachers.push_back()
@@ -156,10 +158,10 @@ teachercourse{
 
 
 
-    		}
+                }
             无数据直接进行程序逻辑运行
 
-	｝
+        ｝
 
 程序结束时会调用-->centerControl::saveEndIntoSql(){
               由于系统所需要，对象表会比程序存在，程序的运行才能正常，比如student表，course表，teachercourse表存在，各个对

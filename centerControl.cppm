@@ -21,7 +21,7 @@ using std::stringstream;
 using std::to_string;
 
 
- void saveEndIntoSql(CenterControl &System);//全局函数用于保存各个类的数据到数据库中，作为Student类和course类的友元函数
+void saveEndIntoSql(CenterControl &System);//全局函数用于保存各个类的数据到数据库中，作为Student类和course类的友元函数
 
 export class CenterControl
 {
@@ -75,7 +75,7 @@ void CenterControl::studentRollInCourse(int Sid, int Cid)
             {
                 if(cou->hasId(Cid))
                 {
-                   stu->joinCourse(cou); //学生对象-》加入课程会判断是否已经有该对象
+                    stu->joinCourse(cou); //学生对象-》加入课程会判断是否已经有该对象
                     cou->joinStudents(stu); //课程对像->加入学生//会自动判断已经有无这个对象
                 }
             }
@@ -88,7 +88,7 @@ void CenterControl::studentRollInCourse(int Sid, int Cid)
 //系统结束保存到sql主要是student的studentcourse容器,
 void saveEndIntoSql(CenterControl &System)
 {
-     //由于返回的是全局饮用对象，main函数传入对象
+    //由于返回的是全局饮用对象，main函数传入对象
 
     print("正在保存信息到数据库中请稍等.....\n");
     //依次访问系统的students容器，便利容器，student单个对象，student单个对象的course容器有哪些course，course的Cid是多少，查找这个stu对象的vector<pair<int, int>> Grades中有该Cid没，有就插入分数，没有就插入空格到学生课程表中 -1表示每有该课程分数
@@ -101,27 +101,27 @@ void saveEndIntoSql(CenterControl &System)
             int score = stu->getScorefromGrades(Cid);
             //先插入关系表,studntCourse关系,再通过分数修改对应列--考虑学生退选课程，原先数据库有，然后变没了
             System.CenterControl::ps.insertTableStudentCourse("studentcourse2024051604041",
-                                                               to_string(Sid),
-                                                               to_string(Cid));
+                                                              to_string(Sid),
+                                                              to_string(Cid));
             //print("\n\n{}\n\n", score);
 
             if (score != -1) { //找到课程有分数会返回其他数字，这里就是该课程有分数
                 System.CenterControl::ps.updateTableStudentGrades("studentcourse2024051604041",
-                                                                   to_string(Sid),
-                                                                   to_string(Cid),
-                                                                   to_string(score));
+                                                                  to_string(Sid),
+                                                                  to_string(Cid),
+                                                                  to_string(score));
 
             }else{
                 System.CenterControl::ps.updateTableStudentGrades("studentcourse2024051604041",
-                                                                   to_string(Sid),
-                                                                   to_string(Cid),
-                                                                   to_string(-1));
-                    //找到课程无分数就返回-1//此时成绩为空，
+                                                                  to_string(Sid),
+                                                                  to_string(Cid),
+                                                                  to_string(-1));
+                //找到课程无分数就返回-1//此时成绩为空，
             }
         }
     }
 
-     print("\n\n程序书数据已经保存到数据库中，欢迎下次使用\n");
+    print("\n\n程序书数据已经保存到数据库中，欢迎下次使用\n");
 
 
 }//全局函数用于保存各个类的数据到数据库中，作为Student类和course类的友元函数
@@ -374,7 +374,7 @@ void CenterControl::loginTeacher(Teacher* teacher)
             getchar();
             getchar();
         }
-            break;
+        break;
         case '4':
             running = false;
             break;
@@ -444,7 +444,7 @@ void CenterControl::userAccStudent(){
 
 
 
- //-------学生
+//-------学生
 
 
 void CenterControl::showCourseAll()
@@ -597,7 +597,7 @@ void Student::showMyAllGrade()
     for (auto &grade : Grades) {
         for (auto &cou : courses) {
             if( cou->useIdshowName(grade.first))//通过id查找课程名字然后输出但是要检测course容器中的id是否对应，否则就会多输出
-                    print("\t{}\n", grade.second);//接着输出课程对于的分数，break取消查找，准备输出下一个课程
+                print("\t{}\n", grade.second);//接着输出课程对于的分数，break取消查找，准备输出下一个课程
         }
     }
 }
@@ -634,7 +634,7 @@ void Student::scoreGrades(int Cid,int score){
 //------------------------------------------course访问Student所需成员实现函数
 void Course::showStudentGrades()
 {
-      //print("showStudentGrades()\n");
+    //print("showStudentGrades()\n");
     for (auto &stu : students) {
         stu->showMyGrade(Cid);//传入当前课程号的id,用于学生进行查看自己的该课程的1成绩
     }
@@ -655,7 +655,7 @@ void Course::scoreGrades()
     cin >> Sid;
     for (auto &stu : students) {
         if (stu->hasId(Sid)) {
-             int score=101;
+            int score=101;
             while(score>100||score<0)//检测输入分数1-100
             {
                 print("请输入分数-0--100\n");

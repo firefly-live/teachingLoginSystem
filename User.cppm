@@ -19,7 +19,7 @@ private:
     string userPasssword;//后续完善实现
 };
 
- bool User::userAccountChargeIsRight(const string Account,const string Password){
+bool User::userAccountChargeIsRight(const string Account,const string Password){
     if(userAccount==Account)
     {
         if(userPasssword==Password)

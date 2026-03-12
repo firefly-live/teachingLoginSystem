@@ -12,7 +12,7 @@ using std::print;
 
 
 export  class Course{
-      friend  void saveEndIntoSql(CenterControl &System);
+    friend  void saveEndIntoSql(CenterControl &System);
 public:
     Course(){}
 
@@ -20,7 +20,7 @@ public:
         : Cid(Cid), name(name){}
     bool hasId(int Ccid); // 查看是否有这个课程
     void joinStudents(Student* student);
-   const string showInformation();//展示课程信息
+    const string showInformation();//展示课程信息
     const bool useIdshowName(int id);//通过课程id号展示课程名字
 
     void scoreGrades();//由老师类传入，然后调用studet的打分，且调入自己的课程名字
@@ -41,7 +41,7 @@ private:
 
 
 
- const bool Course::useIdshowName(int id){
+const bool Course::useIdshowName(int id){
     if(Cid==id)
     {
         print("{}",name);//检查输入的cid号是否相等再输出
@@ -78,7 +78,7 @@ void Course::popStudent(Student* student){
         }
 
     }
-      print("未找到学生对象\n");
+    print("未找到学生对象\n");
 }//退选课程信息
 
 
