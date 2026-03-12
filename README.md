@@ -13,6 +13,7 @@
 ### doc/requireAnylisa.txt 问题分析和逻辑关系讲解，以及使用的类定义
 ### doc/uml逻辑类图
 ### doc/ExperienceandInsights.txt是开发新得
+### doc/speach.mp4.zip是打包的程序框架讲解和运行，主要设计思想还是在requireAnylisa中说明的
 
 课程选课系统是一个基于 C++ 开发的控制台应用程序，实现了学生选课、教师评分等核心功能。系统采用面向对象设计，通过 User 基类派生出 Student 和 Teacher 类，实现了不同角色的权限管理。
 
