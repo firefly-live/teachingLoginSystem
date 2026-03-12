@@ -13,6 +13,7 @@ int main()
 {
 
     CenterControl &System= CenterControl:: getSystem();//获取管理对象
+    System.initilize();//不要在获取静态对象时初始化，否则其他地方一调用就初始化
     System.loginMethod();
     saveEndIntoSql(System);
 

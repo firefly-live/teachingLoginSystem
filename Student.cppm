@@ -62,23 +62,6 @@ int Student::getScorefromGrades(int Cid)
 
 
 
- void Student::scoreGrades(int Cid,int score){
-// 先判断Grades容器中有没有Cid这个pair容器，没有再push
-    for(auto &grade:Grades)//&来引用修改分数
-    {
-        if(grade.first==Cid)
-        {
-            print("分数修改完毕\n");
-            grade.second=score;
-            return;
-        }
-    }
-    pair<int ,int> p(Cid,score);
-    Grades.push_back(p);
-    print("打分完毕\n");
-}//由课程传入，课程的名字和老师选择打分传入
-
-
 
 
 

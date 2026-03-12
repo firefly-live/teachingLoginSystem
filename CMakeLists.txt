@@ -37,6 +37,9 @@ set(FileAll_FILES
     #math.cppm
     ./doc/requireAnylisa.txt
     ./README.md# 模块接口单元
+    ./doc/UserAndAccount.txt
+    ./doc/ExperienceandInsights.txt
+    ./doc/uml.png
 )
 
 

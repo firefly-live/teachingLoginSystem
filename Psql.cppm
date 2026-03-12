@@ -66,10 +66,14 @@ public:
     static Psql& getControlsql();//获取静态管理对象
 
     void itemInintilize(const char *input,vector<string> &fromSql);//协助初始化
+
     void insertTableStudentCourse(const string &table,const string &date1,const string &date2);//插入接口
     void updateTableStudentGrades(const string &table, const string &date1, const string &date2,const string& date3);//插入接口2,用于3参数实现
 
-    void insertTeacherTable(const string &table,const string &date1,const string &date2,const string &date3);//插入接口2
+    void deleteCourseeStudent(const string &table, const string &Sid, const string &Cid);
+
+    void InserteInformationToSystem();
+
 
     void InitleTable();//初始化创建表的操作，在计算机中创建表
     void creatTable(string sql);
@@ -101,19 +105,41 @@ void Psql::creatTable(string sql){
 
 
 
+void Psql::deleteCourseeStudent(const string &table, const string &Sid, const string &Cid){
+
+
+
+    string deleteARow = "delete from studentcourse20240511604041 where sid = "+ Sid +" And  cid = "+Cid;//重复性检测，如果有了，那就忽略
+
+    //print("{}\n",insert);
+    PGresult *res1=PQexec(conclass,deleteARow.c_str());
+
+    if(PQresultStatus(res1)==PGRES_COMMAND_OK)//执行成功，存在行会忽略的
+    {
+        print(" 从学生课程表同步删除成功--sucessfully {}\n",PQcmdTuples(res1));
+    }else{
+        print("delete {} error\n",PQerrorMessage(conclass));
+    }
+
+
+}
+
+
+
+
 
 //初始化连接
 Psql::Psql():constr("host=localhost dbname=postgres user=postgres password= port=5432"),conclass(nullptr){
     conclass=PQconnectdb(constr);//连接到数据库，用管理员权限连接
 
 if (PQstatus(conclass) == CONNECTION_OK) {
-    printf("连接成功！\n");
-    printf("数据库: %s\n", PQdb(conclass));
-    printf("用户: %s\n", PQuser(conclass));
-    printf("主机: %s\n", PQhost(conclass));
-    printf("端口: %s\n", PQport(conclass));
+    print("连接成功！\n");
+    print("数据库: {}\n", PQdb(conclass));
+    print("用户: {}\n", PQuser(conclass));
+    print("主机: {}\n", PQhost(conclass));
+    print("端口: {}\n", PQport(conclass));
 } else {
-    printf("连接失败: %s\n", PQerrorMessage(conclass));
+    print("连接失败: {}\n", PQerrorMessage(conclass));
 }
 
 
@@ -126,7 +152,7 @@ Psql& Psql::getControlsql(){
 }//获取静态管理对象
 
 
-//查询函数接口
+//辅助CenterControl：：initilize函数进行初始化
 void Psql::itemInintilize(const char *input,vector<string> &fromSql){
     PGresult *res=PQexec(conclass,input);//查询获取对象指针
 
@@ -160,65 +186,18 @@ void Psql::itemInintilize(const char *input,vector<string> &fromSql){
 //控制函数接口--增-插入
 void Psql::insertTableStudentCourse(const string &table,const string &date1,const string &date2){
 
-     string isExist;
-    if(table!="teachercourse20240511604041"&&table!="studentcourse20240511604041")//studentcourse和teachercourse的属性特殊性，单独分类
-    {
-        isExist = "select count(*) from " + table + " where id = " +date1;//先查看存在不再插入
+       string insert = "INSERT INTO studentcourse20240511604041 (sid,cid) VALUES ("+date1+","+date2+")" + "ON CONFLICT (sid, cid) DO NOTHING;";//重复性检测，如果有了，那就忽略
 
-
-    }else if(table=="teachercourse20240511604041"){
-         isExist = "select count(*) from " + table + " where teacher_id = " +date1+" AND course_id = "+date2;//先查看存在不再插入
-    }else if(table=="studentcourse20240511604041")
-    {
-         isExist = "select count(*) from " + table + " where sid = " +date1+" AND cid =" +date2;//先查看存在不再插入
-
-    }
-
-
-
-
-     PGresult *res=PQexec(conclass,isExist.c_str());//查询获取对象指针
-
-     int count = std::atoi(PQgetvalue(res,0,0));
-
-     //print("{}\n",isExist);
-
-    if(count ==1)
-    {
-        print("已经插入到表\n",PQcmdTuples(res));
-    }else{
-
-        //不存在，插入
-         string insert;
-        if(table =="student")
-        {
-            insert = "INSERT INTO student (id, name) VALUES ("+date1+",'"+date2+"')";
-
-        }else if(table=="course")
-        {
-            insert = "INSERT INTO course (id, name) VALUES ("+date1+",'"+date2+"')";
-
-        }else if(table=="studentcourse20240511604041")
-        {
-            insert = "INSERT INTO studentcourse20240511604041 (sid,cid) VALUES ("+date1+","+date2+")" + "ON CONFLICT (sid, cid) DO NOTHING;";//重复性检测，如果有了，那就忽略
-
-        }else if(table=="teachercourse")
-        {
-            insert = "INSERT INTO teachercourse (teacher_id,course_id) VALUES ("+date1+","+date2+")";
-
-        }
       //print("{}\n",insert);
         PGresult *res1=PQexec(conclass,insert.c_str());
 
-        if(PQresultStatus(res1)==PGRES_COMMAND_OK)
+        if(PQresultStatus(res1)==PGRES_COMMAND_OK)//执行成功，存在行会忽略的
         {
-            print("---sucessfully or is exist {}\n",PQcmdTuples(res));
+            print("插入到学生课程表成功或者已经存在---successfully{}\n",PQcmdTuples(res1));
         }else{
             print("insert {} error\n",table);
         }
 
-
-    }
 }//插入接口
 
 
@@ -234,43 +213,12 @@ void Psql::updateTableStudentGrades(const string &table, const string &date1, co
     PGresult *res1 = PQexec(conclass, insert.c_str());
 
     if (PQresultStatus(res1) == PGRES_COMMAND_OK) {
-        print("---sucessfully {}\n", PQcmdTuples(res1));
+        print("更新学生课程分数---successfully {}\n", PQcmdTuples(res1));
     } else {
-        fprintf(stderr, "❌ 数据库操作失败: %s\n", PQerrorMessage(conclass));
+        fprintf(stderr, "数据库操作失败: %s\n", PQerrorMessage(conclass));
 
     } //插入接口
 }
-
-void Psql::insertTeacherTable(const string &table,const string &date1,const string &date2,const string &date3){
-    const string &findteacher="select count(*) from teacher where id = "+date1;
-
-      PGresult *res=PQexec(conclass,findteacher.c_str());//查询获取对象指针
-
-    int count = std::atoi(PQgetvalue(res,0,0));
-
-    if(count ==1)
-    {
-        print("已经插入到表\n",PQcmdTuples(res));
-    }else{
-        const string &inserts="insert into teacher (id,name,course) VALUES ("+date1+", '"+date2+"','"+date3+"')";
-        PGresult *isinsert = PQexec(conclass,inserts.c_str());
-
-        //print("{}",inserts);
-
-        if(PQresultStatus(isinsert)==PGRES_COMMAND_OK)
-        {
-            print("---sucessfully {}\n",PQcmdTuples(isinsert));
-        }else{
-            print("insert {} error\n",table);
-        }
-    }
-
-
-
-}
-
-//初始化创建表的操作，在计算机中创建表
-
 
 void Psql::InitleTable(){
     const string studentTable="student";
@@ -287,5 +235,87 @@ void Psql::InitleTable(){
     creatTable(createTeachertable);
     creatTable(createTeacherCourseTable);
 
+    InserteInformationToSystem();//插入到对象表
+
+
  }
+
+ //将这些对象分别插入到表中，以便于读取,也可自定义
+ void Psql::InserteInformationToSystem()
+ {
+     const string insertStudentSql = "INSERT INTO student20240511604041 (id, name, account, password) VALUES "
+                                     "(2001, 'Qiong1', 'Qiong1', '2'),"
+                                     "(2002, 'Qiong2', 'Qiong2', '2'),"
+                                     "(2003, 'Qiong3', 'Qiong3', '2'),"
+                                     "(2004, 'Qiong4', 'Qiong4', '2'),"
+                                     "(2005, 'Qiong5', 'Qiong5', '2') "
+                                     "ON CONFLICT (id) DO NOTHING;";
+
+     // 教师表插入语句
+     const string insertTeacherSql = "INSERT INTO teacher20240511604041 (id, name, account, password) VALUES "
+                                     "(3001, 'Ji1', 'Ji1', '3'),"
+                                     "(3002, 'Ji2', 'Ji2', '3'),"
+                                     "(3003, 'Ji3', 'Ji3', '3'),"
+                                     "(3004, 'Ji4', 'Ji4', '3'),"
+                                     "(3005, 'Ji5', 'Ji5', '3') "
+                                     "ON CONFLICT (id) DO NOTHING;";
+
+     // 课程表插入语句
+     const string insertCourseSql = "INSERT INTO course20240511604041 (id, name) VALUES "
+                                    "(1001, 'math'),"
+                                    "(1002, 'C++'),"
+                                    "(1003, 'data_structure'),"
+                                    "(1004, 'database'),"
+                                    "(1005, 'operating system') "
+                                    "ON CONFLICT (id) DO NOTHING;";
+
+     // 教师课程关系表插入语句
+     const string insertTeacherCourseSql = "INSERT INTO teachercourse20240511604041 (tid, cid) VALUES "
+                                           "(3001, 1001),"
+                                           "(3002, 1002),"
+                                           "(3003, 1003),"
+                                           "(3004, 1004),"
+                                           "(3005, 1005) "
+                                           "ON CONFLICT (tid, cid) DO NOTHING;";
+
+
+     PGresult *res = PQexec(conclass, insertStudentSql.c_str());
+     if (PQresultStatus(res) == PGRES_COMMAND_OK) {
+         print("✅学生表初始化成功\n");
+     } else {
+          fprintf(stderr, "学生表 数据库操作失败: %s\n", PQerrorMessage(conclass));
+     }
+     PQclear(res);
+
+     // 执行教师表插入
+     res = PQexec(conclass, insertTeacherSql.c_str());
+     if (PQresultStatus(res) == PGRES_COMMAND_OK) {
+         print("✅ 教师表初始化成功\n");
+     } else {
+          fprintf(stderr, "教师表 数据库操作失败: %s\n", PQerrorMessage(conclass));
+     }
+     PQclear(res);
+
+     // 执行课程表插入
+     res = PQexec(conclass, insertCourseSql.c_str());
+     if (PQresultStatus(res) == PGRES_COMMAND_OK) {
+         print("✅ 课程表初始化成功\n");
+     } else {
+         fprintf(stderr, " 课程表数据库操作失败: %s\n", PQerrorMessage(conclass));
+     }
+     PQclear(res);
+
+     // 执行教师课程关系表插入
+     res = PQexec(conclass, insertTeacherCourseSql.c_str());
+     if (PQresultStatus(res) == PGRES_COMMAND_OK) {
+         print("✅ 教师课程关系表初始化成功\n");
+     } else {
+         fprintf(stderr, "教师课程关系表 数据库操作失败: %s\n", PQerrorMessage(conclass));
+     }
+     PQclear(res);
+
+
+
+ }
+
 

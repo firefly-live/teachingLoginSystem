@@ -26,6 +26,8 @@ using std::to_string;
 export class CenterControl
 {
     friend  void saveEndIntoSql(CenterControl &System);
+    friend void Student::scoreGrades(int Cid,int score);//作为CenterControl的友元函数，方便访问Psql数据对象，然后便于操作插入分数到表中
+
 public:
     //系统初始优化相关
     void initilize();                         //初始化
@@ -119,6 +121,8 @@ void saveEndIntoSql(CenterControl &System)
         }
     }
 
+     print("\n\n程序书数据已经保存到数据库中，欢迎下次使用\n");
+
 
 }//全局函数用于保存各个类的数据到数据库中，作为Student类和course类的友元函数
 
@@ -196,7 +200,7 @@ void CenterControl::initilize()
     ps.itemInintilize("select * from studentcourse20240511604041", getAllfromSql); //将数据库的这些字符串存储到哦容器中
     for (auto aLine : getAllfromSql) {
         stringstream ss(aLine); //将获取的字符串作为了流依次赋值
-        print("studentcourse:\n {}", aLine);//调试
+        //print("studentcourse:\n {}", aLine);//调试
 
         int Sid, Cid, grades;
         ss >> Sid >> Cid >> grades; //将获取到的包含信息的字符串依次赋值给对应类型
@@ -209,7 +213,7 @@ void CenterControl::initilize()
 
         }//遍历学生容器，找到目标对象，然后将分数依次赋值
 
-        print("{} {} {}\n",Sid,Cid,grades);
+        //print("{} {} {}\n",Sid,Cid,grades);
     }
     //1开头：学生id
     //2开头：课程id
@@ -246,7 +250,6 @@ void CenterControl::initilize()
 CenterControl& CenterControl::getSystem()
 {
     static CenterControl LoginSys;
-    LoginSys.initilize();
     return LoginSys;
 } //传出静态的管理对象
 void CenterControl::loginMethod()
@@ -487,9 +490,26 @@ void CenterControl::studentNotRollInCourse(Student* student)
     int Cid = 0;
     cin >> Cid;
 
+
+
+
+
+
+
     //遍历容器查找课程
     for (auto &cour : courses) {
         if (cour->hasId(Cid)) {
+            //退选课程时，删除对应学生课程表信息,获取该学生信息，只获取学生的id
+            string infor = student->showInformaton();
+            stringstream ss(infor);
+            int sid;
+            ss >> infor>>sid;//infor作为获取name,sid获取id
+            //print("----test--{}", sid);
+            getchar();
+
+
+            ps.deleteCourseeStudent("studentcourse20240511604041",to_string(sid),to_string(Cid));
+
             student->popCourse(cour); //pop出去自己选的课程
             cour->popStudent(student); //课程pop学生对象
             return;
@@ -516,6 +536,8 @@ void CenterControl::showCourseOwn(Teacher* teacher)
     print("我   教授课程   教授课程id\n");
     teacher->showCourse();
 } //展示所有课程+教师
+
+
 void CenterControl::scoreGrades(Teacher* teacher)
 {
     //循环打分，输入2退出
@@ -579,6 +601,33 @@ void Student::showMyAllGrade()
         }
     }
 }
+
+
+
+void Student::scoreGrades(int Cid,int score){
+    // 先判断Grades容器中有没有Cid这个pair容器，没有再push
+    for(auto &grade:Grades)//&来引用修改分数
+    {
+        if(grade.first==Cid)
+        {
+            CenterControl &sys =CenterControl ::getSystem();
+            sys.CenterControl::ps.updateTableStudentGrades("studentcourse20240511604041",
+                                                           to_string(Sid),
+                                                           to_string(Cid),
+                                                           to_string(score));
+            print("分数修改完毕\n");
+            grade.second=score;
+            return;
+        }
+    }
+    pair<int ,int> p(Cid,score);
+    Grades.push_back(p);
+    print("打分完毕\n");
+}//由课程传入，课程的名字和老师选择打分传入
+
+
+
+
 
 
 

@@ -1,6 +1,99 @@
-课程选课系统，v1.9 增加账号密码登录,选择学生教师，然后输入账号密增加qml数据库存数据持久化
+
+大体框架：首先实现程序逻辑，再次实现sql数据库搭配程序存储数据,然后优化整体，比如登陆用户名密码
+
+user通过系统登陆，学生老师不同的操作权限，
+学生：1:
+查看已经选择过的课程---对应老师显示，
+2：选课程--CRUD，
+3：退选课程
+4:
+查看自己的选课的成绩
+5:
+退出学生操作系统
+
+老师：1：查看自己教的课程
+2：给学生成绩打分
+3:
+查看学生成绩--显示课程
+4:
+退出教师操作系统
+
+
+程序逻辑以及类实现----
+
+A:
+目标用户user：老师Teacher，学生Student
+--合并基类User,老师学生继承，User函数指针操作老师和学生对像
+
+老师学生共同方法名字：1：showCourse（）---对于学生来说，查看可选课程，对于老师来说，查看自己的教授课
+
+
+//--------------------------------------程序控制逻辑实现--V1.0
+
+
+1：CenterControl初始化控制对象,初始化确定有 ----课程，学生，老师的所有信息
+2：选择登陆方式loginMethod();
+
+case:
+学生 {
+
+    通过特定的一个学生对象进入，后续添加登陆密码等
+
+
+    while循环展示ui操作界面：
+    1：查看已经选的课程---对应老师显示，
+    students->showCourses()通过student内的Course容器，获取course容器中的课程名字和id
+        2：选课--CRUD--自动展示所有可选课程（缺少是否已经选择选择过了，后续添加）
+        先展示courses容器的所有信息，名称-id
+        学生输入课程对应id--检查id在coursse是否存在，
+        if判断后将course导入到student对象的courses容器中-同时将student对象导入到该课程对象的属性students容器中
+        3：退选课--CRUD
+        执行功能1显示已经选择了的课程信息，然后输入退选课程id,检查id后
+        通过student对象，将对于课程对象pop出容器，同时，将课程对象中的student对象pop出容器
+        4：查看自己的选课成绩
+        通过自身的 c;
+容器输出课程信息和分数，course类有通过id查询课程名的函数，这样显示成绩时是课程名+分数
+}
+case:
+老师 {
+通过特定的一个教师对象进入操作，后续添加登陆密码等
+
+while循环展示ui操作界面：
+    1：查看自己教的课程
+    teacher对象有course容器，也就是教师教的课程，此时输出课程信息
+    2：给学生成绩打分
+    teacher对象有course容器，也就是教师教的课程，因为教师基本只教现阶段的课程，容器是后续扩展，course对象又包含student容器，展示有哪些学生选了课程，然后选择到该学生，输入分数,将分数和课程id导入到student内置的函数方法，然后通过vector<pair<int, int>> Grades
+            将课程id和分数push进去
+        3:
+            查看学生成绩--显示课程
+            teacher对象有course容器，course对象里有学生容器，调用学生的成绩展示函数，只展示当前科目的容器中，课程的分数，不会展示其他所有课程的分数
+
+
+}
+
+课程选课系统，v2.0 增加账号密码登录,选择学生教师，然后输入账号密增加qml数据库存数据持久化
 码登录到系统，选择功能--
 数据库存储功能设计：
+
+
+//--------------------------------------程序控制+psql数据库逻辑实现--V2.0
+
+
+读取数据到程序对应对象（对于5个表分别进行读取赋值给对应对象）
+                    比如对象表，course,student,teacher,读取属性，执行new操作
+                    关系表：teacherCourse来说，已经绑定好了，也是读取表，然后执行
+                    BindCourse函数
+                    studentcourse，先读取sid和cid,分别通过学生课程对象push到对象使
+                    用的容器中，然后读取到的grades如果是-1,则说明该成绩未打分，只有教
+                    师打分了才会不显示-1,学生功能进行查找的时候也会显示的
+
+保存数据到数据库简介（主要是studentcourse表）：
+                  在执行程序逻辑交互的时候，如果程序刚执行完，比如打分，
+                  然后程序被意外退出，数据不会及时保存，所以在执行，
+                  学生选课，退课，教师打分的操作的时候会自动执行相关的sql语句，人机交
+                  互后就保存，然后在程序正常关闭的时候再执行一次保存关系表的的操作，双
+                  重保护数据操作
+
 
 
 
@@ -9,6 +102,8 @@ qml数据库功能:
 centerControl::initilize();
 void saveEndIntoSql();作为student类的友元函数
 这两个为数据操作主要的两个函数
+
+
 
 数据表设计
 course{
@@ -91,41 +186,12 @@ teachercourse{
 
 
 
-大体框架：首先实现程序逻辑，再次实现sql数据库搭配程序存储数据,然后优化整体，比如登陆用户名密码
-
-
-user通过系统登陆，学生老师不同的操作权限，
-学生：1:
-查看已经选择过的课程---对应老师显示，
-2：选课程--CRUD，
-3：退选课程
-4:
-查看自己的选课的成绩
-5:
-退出学生操作系统
-
-老师：1：查看自己教的课程
-2：给学生成绩打分
-3:
-查看学生成绩--显示课程
-4:
-退出教师操作系统
-
-
-程序逻辑以及类实现----
-
-A:
-目标用户user：老师Teacher，学生Student
---合并基类User,老师学生继承，User函数指针操作老师和学生对像
-
-老师学生共同方法名字：1：showCourse（）---对于学生来说，查看可选课程，对于老师来说，查看自己的教授课
-
-
 //--------------------------------------类实现
-export class User {
+export class User{
 public:
-    User() {};
+    User(){};
     User(string userAccount, string userPasssword): userAccount(userAccount), userPasssword(userPasssword) {}
+    bool userAccountChargeIsRight(const string Account,const string Passsword);//判断账号密码是否正确
     virtual void showCourse() = 0; //--对于学生来说，查看可选课程，对于老师来说，查看自己的教授课
 private:
     string userAccount;//后续优化完善实现
@@ -134,12 +200,13 @@ private:
 
 
 
-export class Teacher :public User {
+
+export class Teacher :public User{
 
 public:
-    Teacher() {};
-    Teacher(int Tid, string name)
-        : Tid(Tid), name(name) {}
+    Teacher(){};
+    Teacher(int Tid, string name,string userAccount, string userPasssword)
+        : User(userAccount,userPasssword),Tid(Tid), name(name){}
     void showCourse(); //--对于学生来说，查看可选课程，对于老师来说，查看自己的教授课
     void scoreGrades();//给学生打分，传入course
     const string showInformation();//展示老师的信息
@@ -158,28 +225,15 @@ private:
 };
 
 
-void Teacher::scoreGrades() {
-    print("\n课程\t课程id号\n");
-    for(auto cour: courses)
-    {
-        print("{}\n",cour->showInformation());//展示当前课程
-        cour->showStudent();//展示该课程有哪些学生
-        cour->scoreGrades();//进入course方法打分
-    }
-}//给学生打分，传入course
-
-
-
-
-export class Student:public User {
-
+export class Student:public User{
+     friend  void saveEndIntoSql(CenterControl &System);
 public:
-    Student() {}
-    Student(int Sid, string name)
-        : Sid(Sid), name(name) {
+    Student(){}
+    Student(int Sid, string name,string userAccount, string userPasssword)
+        : User(userAccount,userPasssword),Sid(Sid), name(name){
         //pair<int, int> test(1001,91);//测试
         //Grades.push_back(test);//测试
-    }
+}
     void showCourse(); //--对于学生来说，查看可选课程，对于老师来说，查看自己的教授课
     void operatingCourse();//2：选课--CRUD
     void showMyAllGrade();     //3：查看自己的所有选课成绩
@@ -190,12 +244,14 @@ public:
     //常用逻辑判断
     bool hasId(int Id);//查看是否有这个学生
     void joinCourse(Course* course);//添加课程信息
-    void popCourse(Course* course);//退选课程信息
+     void popCourse(Course* course);//退选课程信息
     const string showInformaton();//展示学生信息
 
 
     bool operator==(Student* student);//测试student对象是否相等的操作
     void operator=(Student* student);//测试student对象是否相等的操作
+
+     int getScorefromGrades(int Cid);//通过Cid得出该课程分数
 
 private:
     int Sid;
@@ -209,17 +265,18 @@ private:
 
 
 
-export  class Course {
 
+export  class Course{
+      friend  void saveEndIntoSql(CenterControl &System);
 public:
-    Course() {}
+    Course(){}
 
     Course(int Cid, string name)
-        : Cid(Cid), name(name) {}
+        : Cid(Cid), name(name){}
     bool hasId(int Ccid); // 查看是否有这个课程
     void joinStudents(Student* student);
-    const string showInformation();//展示课程信息
-    const void useIdshowName(int Cid);//通过课程id号展示课程名字
+   const string showInformation();//展示课程信息
+    const bool useIdshowName(int id);//通过课程id号展示课程名字
 
     void scoreGrades();//由老师类传入，然后调用studet的打分，且调入自己的课程名字
 
@@ -240,16 +297,24 @@ private:
 
 
 
+
 export class CenterControl
 {
+    friend  void saveEndIntoSql(CenterControl &System);
+    friend void Student::scoreGrades(int Cid,int score);//作为CenterControl的友元函数，方便访问Psql数据对象，然后便于操作插入分数到表中
+
 public:
     //系统初始优化相关
     void initilize();                         //初始化
-    static CenterControl getSystem();         //传出静态的管理对象
+    static CenterControl &getSystem();         //传出静态的管理对象
     void loginMethod();                       //选择登陆方式
     void loginStudent(Student* student);      //选择学生方式
     void loginTeacher(Teacher* teacher);      //选择老师登陆方式
     void teacherBindCourse(int TId, int cId); //老师绑定课程
+
+
+    void userAccTeacher();//教师账号密码登录
+    void userAccStudent();//学生账号密码登录
 
     //学生
     void showCourseAll(); //展示所有课程+教师
@@ -272,65 +337,10 @@ private:
     vector<Student*> students; //存储学生类
     vector<Course*> courses;   //存储课程类
     vector<Teacher*> teachers; //存储老师类
+    Psql ps;//数据库管理
 };
 
-//--------------------------------------程序控制逻辑实现--V1.0
 
 
-1：CenterControl初始化控制对象,初始化确定有 ----课程，学生，老师的所有信息
-2：选择登陆方式loginMethod();
-
-case:
-学生 {
-
-    通过特定的一个学生对象进入，后续添加登陆密码等
-
-
-    while循环展示ui操作界面：
-    1：查看已经选的课程---对应老师显示，
-    students->showCourses()通过student内的Course容器，获取course容器中的课程名字和id
-        2：选课--CRUD--自动展示所有可选课程（缺少是否已经选择选择过了，后续添加）
-        先展示courses容器的所有信息，名称-id
-        学生输入课程对应id--检查id在coursse是否存在，
-        if判断后将course导入到student对象的courses容器中-同时将student对象导入到该课程对象的属性students容器中
-        3：退选课--CRUD
-        执行功能1显示已经选择了的课程信息，然后输入退选课程id,检查id后
-        通过student对象，将对于课程对象pop出容器，同时，将课程对象中的student对象pop出容器
-        4：查看自己的选课成绩
-        通过自身的 c;
-容器输出课程信息和分数，course类有通过id查询课程名的函数，这样显示成绩时是课程名+分数
-}
-case:
-老师 {
-通过特定的一个教师对象进入操作，后续添加登陆密码等
-
-while循环展示ui操作界面：
-    1：查看自己教的课程
-    teacher对象有course容器，也就是教师教的课程，此时输出课程信息
-    2：给学生成绩打分
-    teacher对象有course容器，也就是教师教的课程，因为教师基本只教现阶段的课程，容器是后续扩展，course对象又包含student容器，展示有哪些学生选了课程，然后选择到该学生，输入分数,将分数和课程id导入到student内置的函数方法，然后通过vector<pair<int, int>> Grades
-            将课程id和分数push进去
-        3:
-            查看学生成绩--显示课程
-            teacher对象有course容器，course对象里有学生容器，调用学生的成绩展示函数，只展示当前科目的容器中，课程的分数，不会展示其他所有课程的分数
-
-
-}
-
-
-
-
-
-
-//已优化
-选课逻辑判断是否已经选择了，
-Student构造默认添加课程分数测试——实现学生查看课程成绩，实现教师查看自己教授课程对应所有学生成绩——功能实现
-
-打分判断1-100
-
-
-//已优化
-选课判断是否已经选过了
-bug1:进行initilize()读取studentcourse表的grade,如果grade为null读取push进去是垃圾数值，需要处理
 
 
