@@ -1,0 +1,47 @@
+///module:
+//Description
+//this files is build by author: tangshengqing2024051604041 at 2026-03-12 18:04:16
+//email address:2052448030@qq.com
+
+
+// 程序初始化会执行以下sql语句，确保用户包含此类信息才会让程序运行,让对象进行逻辑交互，
+
+请到Psql::InserteIntoformationToSystem()中可自定义这些对象
+
+
+初始化默认是以下的
+// 学生表
+学生：
+            Sid      name     Account  password
+            (2001, 'Qiong1', 'Qiong1', '2'),
+            (2002, 'Qiong2', 'Qiong2', '2'),
+            (2003, 'Qiong3', 'Qiong3', '2'),
+            (2004, 'Qiong4', 'Qiong4', '2'),
+            (2005, 'Qiong5', 'Qiong5', '2')
+
+// 教师表
+教师：
+            Tid      name     Account  password
+            (3001, 'Ji1', 'Ji1', '3'),
+            (3002, 'Ji2', 'Ji2', '3'),
+            (3003, 'Ji3', 'Ji3', '3'),
+            (3004, 'Ji4', 'Ji4', '3'),
+            (3005, 'Ji5', 'Ji5', '3')
+
+// 课程表
+课程：
+            Cid      name
+            (1001, 'math'),
+            (1002, 'C++'),
+            (1003, 'data_structure'),
+            (1004, 'database'),
+            (1005, 'operating system')
+
+// 教师-课程关系表
+教师课程关系：
+            Tid      Cid
+            (3001, 1001),
+            (3002, 1002),
+            (3003, 1003),
+            (3004, 1004),
+            (3005, 1005)
