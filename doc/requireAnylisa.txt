@@ -43,7 +43,7 @@ case:
     while循环展示ui操作界面：
     1：查看已经选的课程---对应老师显示，
     students->showCourses()通过student内的Course容器，获取course容器中的课程名字和id
-        2：选课--CRUD--自动展示所有可选课程（缺少是否已经选择选择过了，后续添加）
+        2：选课--CRUD--自动展示所有可选课程（缺少是否已经选择选择过了，已添加）
         先展示courses容器的所有信息，名称-id
         学生输入课程对应id--检查id在coursse是否存在，
         if判断后将course导入到student对象的courses容器中-同时将student对象导入到该课程对象的属性students容器中
@@ -62,8 +62,8 @@ while循环展示ui操作界面：
     1：查看自己教的课程
     teacher对象有course容器，也就是教师教的课程，此时输出课程信息
     2：给学生成绩打分
-    teacher对象有course容器，也就是教师教的课程，因为教师基本只教现阶段的课程，容器是后续扩展，course对象又包含student容器，展示有哪些学生选了课程，然后选择到该学生，输入分数,将分数和课程id导入到student内置的函数方法，然后通过vector<pair<int, int>> Grades
-            将课程id和分数push进去
+    teacher对象有course容器，也就是教师教的课程，因为教师基本只教现阶段的课程，后续扩展，course对象又包含student容器，展示有哪些学生选了课程，然后选择到该学生，输入分数,将分数和课程id导入到student内置的函数方法，然后通过vector<pair<int, int>> Grades
+            将课程id和分数push进去，teacher-》course-》student间接操作student的分数
         3:
             查看学生成绩--显示课程
             teacher对象有course容器，course对象里有学生容器，调用学生的成绩展示函数，只展示当前科目的容器中，课程的分数，不会展示其他所有课程的分数
@@ -147,7 +147,7 @@ teachercourse{
 
                  关系表studencourse表，读取sid，循环查找students容器，找到目标对象，传入关系表同一行的cid，同一行的分数值
                  ，调用scoregrades打分函数，分别传入cid和grade
-                 在scoregrades函数中会判断该cid是否已经打过分了，然后grades.push_back(pair<int,int>(cid,grades));
+                 在scoregrades函数中会判断该cid是否已经打过分了，当获取score=-1说明是没有打分，score》0&&score《100才是打了分的，然后grades.push_back(pair<int,int>(cid,grades));
                  然后将此行的sid，cid调用成员函数studentRollIncourse()；
 
 
@@ -168,9 +168,8 @@ teachercourse{
               象才能有正常的功能交互，所以只需要存储studentCourse表的信息，也就是学生选择的课程和1课程成绩信息，
               成绩信息不一定有，在没有该课程分数时，-1标识为没有打分，其他则会打分了
               到时候直接插入空就行了
-              后续诸如删除学生，改密码等操作后续再实现修改对象表
 
-              待优化点：1教师进行课程打分的时候，程序如果意外退出，数据库文件不能及时的更新学生成绩，所以后续优化打分立即插入分数到教师课程表
+              已优化--教师进行课程打分的时候，程序如果意外退出，数据库文件不能及时的更新学生成绩，所以后续优化打分立即插入分数到教师课程表
               2：当学生退选课的时候，学生1课程表没有delete对应行，后续添加
 
 
@@ -178,6 +177,7 @@ teachercourse{
 
 
 
+ 后续诸如删除学生，改密码等操作后续再实现操作修改对象表
 
 
 
